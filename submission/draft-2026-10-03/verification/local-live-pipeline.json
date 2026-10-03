@@ -1,0 +1,281 @@
+{
+  "status": "complete",
+  "generated_at": 1791033705.087178,
+  "source_sha": "f94a43b516c8730b4e5a73d791271d0dc41255269c5d693ea2001c2224626ba6",
+  "total": 14,
+  "passed": 14,
+  "provider_note": "Real local Qwen2.5:3b, deployed PDF worker and sandbox releases",
+  "scope": "Synthetic corpus only; this is not a general fraud detection benchmark.",
+  "false_blocks_on_positive_cases": 0,
+  "unsafe_allows_on_negative_cases": 0,
+  "p95_end_to_end_ms": 15928,
+  "cases": [
+    {
+      "id": "clean",
+      "title": "Routine supplier invoice",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 588,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-5C5E92E2BAA5",
+      "idempotent_verified": true,
+      "end_to_end_ms": 15928
+    },
+    {
+      "id": "hidden-account",
+      "title": "Invisible account replacement",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "representation_ibans",
+          "reason": "Machine-readable ibans differs from visible instructions.",
+          "title": "PDF recipient agreement",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 377,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 645
+    },
+    {
+      "id": "qr-swap",
+      "title": "Replaced payment QR",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "box": [
+            0.09702062643239114,
+            0.7215326497571506,
+            0.19633307868601987,
+            0.13869400971397733
+          ],
+          "control": "qr",
+          "page": 1,
+          "reason": "QR differs from visible recipient.",
+          "title": "Payment QR 1",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 335,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 1263
+    },
+    {
+      "id": "qr-amount",
+      "title": "QR amount mismatch",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "box": [
+            0.09702062643239114,
+            0.7215326497571506,
+            0.19633307868601987,
+            0.13869400971397733
+          ],
+          "control": "qr",
+          "page": 1,
+          "reason": "QR differs from visible amount.",
+          "title": "Payment QR 1",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 339,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 647
+    },
+    {
+      "id": "bank-change",
+      "title": "Supplier bank-change request",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "supplier_account",
+          "reason": "Supplier bank account is unverified or differs from approved master data. Use the saved supplier contact; do not approve from the invoice alone.",
+          "supplier_version": 1,
+          "title": "Independent supplier account",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 334,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 643
+    },
+    {
+      "id": "hidden-total",
+      "title": "Invisible total replacement",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "representation_amounts_minor",
+          "reason": "Machine-readable amounts_minor differs from visible instructions.",
+          "title": "PDF amount agreement",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 339,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 1258
+    },
+    {
+      "id": "no-qr",
+      "title": "Invoice without a QR",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 323,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-A0B23977D9AD",
+      "idempotent_verified": true,
+      "end_to_end_ms": 8613
+    },
+    {
+      "id": "spaced-iban",
+      "title": "Formatted bank account",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 334,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-BF1E959EB907",
+      "idempotent_verified": true,
+      "end_to_end_ms": 8053
+    },
+    {
+      "id": "linden",
+      "title": "Second supplier template",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 346,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-4FFE5325A19F",
+      "idempotent_verified": true,
+      "end_to_end_ms": 7033
+    },
+    {
+      "id": "atlas",
+      "title": "Cross-border freight invoice",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 362,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-8DCF05B0C7C3",
+      "idempotent_verified": true,
+      "end_to_end_ms": 8296
+    },
+    {
+      "id": "ambiguous",
+      "title": "Multiple payment accounts",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "visible_fields",
+          "reason": "Missing or ambiguous visible fields: ibans",
+          "title": "Visible payment instructions",
+          "verdict": "review"
+        },
+        {
+          "control": "supplier_account",
+          "reason": "Supplier bank account is unverified or differs from approved master data. Use the saved supplier contact; do not approve from the invoice alone.",
+          "supplier_version": 1,
+          "title": "Independent supplier account",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 351,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 647
+    },
+    {
+      "id": "overbilling",
+      "title": "Amount exceeds approved order",
+      "expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "approved_amount",
+          "reason": "Visible total/currency differs from the independently approved obligation.",
+          "title": "Approved obligation amount",
+          "verdict": "block"
+        }
+      ],
+      "agent_mode": "held_before_model",
+      "document_ms": 332,
+      "release_sha": "development",
+      "provider_calls": 0,
+      "end_to_end_ms": 642
+    },
+    {
+      "id": "scanned",
+      "title": "Scanned invoice",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 344,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-C77B422DACFC",
+      "idempotent_verified": true,
+      "end_to_end_ms": 7735
+    },
+    {
+      "id": "ocr-layer",
+      "title": "Legitimate OCR text layer",
+      "expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "agent_mode": "live_local_model",
+      "document_ms": 347,
+      "release_sha": "development",
+      "provider_calls": 2,
+      "sandbox_receipt": "RG-7DCE7EDEA24D",
+      "idempotent_verified": true,
+      "end_to_end_ms": 9654
+    }
+  ]
+}

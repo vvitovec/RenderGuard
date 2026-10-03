@@ -1,0 +1,30 @@
+{
+  "project": "RenderGuard",
+  "stage": "draft",
+  "created_at": "2026-10-03T15:29:47.347492+02:00",
+  "source_commit": "5bd3329760057ab0a911030a6810cb93a216dfad",
+  "slides": 10,
+  "submission_status": "Prepared for Viktor review; not submitted",
+  "demo_url": "https://renderguard.vvitovec.com",
+  "repository_url": "https://github.com/vvitovec/RenderGuard",
+  "files": {
+    "RenderGuard-Blue-Bands-Collectors.pdf": "fb65fc93a1afec53d5cae0f0570e20b687b79e823dac875f5d453cc79c741c83",
+    "criteria-matrix.md": "e3b2ecb8db7d44248397bf26a631c5ff4de1bcc77b507de3547cb6e816fbb83f",
+    "description.md": "135cddf562632f2abbda38f8b6368a84e7a205653ce6bc1ee05002e474a62892",
+    "judge-walkthrough.md": "c839f73ae0cc35058df80cc0abe5ada4f2268f73c93b1e630c99e059ce14a8d7",
+    "limitations.md": "1c9d4ea3db2f5f9162f2ede115e441a1e4b1c671168f7eab0106f90f42384d85",
+    "screenshots/control-probe.png": "bfb0ab30eec64400166b8cd3ae3376fe19b1eeb0ad7e5016c84763b27151fb6a",
+    "screenshots/mobile-workbench.png": "f87cf0c34f2446e469bdc1ee6607d5c8f54c912a95c7a15beadad4adaa381590",
+    "screenshots/qr-swap.png": "40a8266f9966a733343718a9db20ed21751d24b5eb2c80add43187390f042dc3",
+    "screenshots/register.png": "c29788548ace0afdf5337891927c25ce3ff72bea07c729f116737b55b5b58294",
+    "screenshots/release.png": "b68a6285e5710c7704fb026643c9369aea367339e06e3aaa7a667f3dd1ae034e",
+    "source.zip": "b67d16368643adb2411d7a4d9a0a4de39d66cb39a4a30ee4af6fa474c11ebb76",
+    "team.json": "07f2ec07d7f76000229f1b006f5da507a050f0b8b7c5b09689d8a6174804be4a",
+    "verification/browser.json": "c4f5ef540c29e38b66cce7153a24dcda7df577d7083ecdd9a34d8a2bd2766d39",
+    "verification/live-pipeline.json": "d5dfc1a4c368dd9d2a2ebdef834657efd7cacc95b202577ead1d308146ee3eb2",
+    "verification/live-semantic.json": "8160b4d296c957f90c1fc3f06bb83c8c841a4967f70c15cd5a992819756b7433",
+    "verification/local-live-pipeline.json": "9ce62088e05adbff5ef915d224173d9075db323e97093551dc285082caa09460",
+    "verification/results.json": "8869ae0b5e27cfe73db2e74342e1499cf403c459200547315e36ceffc5b1e2d5",
+    "verification/unit-tests.xml": "48ece1291b1db508ae4d5776de3e5f667a176df985b738537a434e236d66e521"
+  }
+}
