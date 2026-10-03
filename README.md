@@ -74,7 +74,7 @@ uv run python -m scripts.live_model_check --url https://renderguard.vvitovec.com
 BASE_URL=https://renderguard.vvitovec.com npm run test:e2e
 ```
 
-The unit suite uses actual PDFium rendering, Tesseract OCR and QR decoding, with a **clearly named deterministic provider double** for accounting/permissions/failure-path checks. The live evaluator uses the actual Qwen model and no substitute. Results identify their scope and source-content hash. The 14-case PDF corpus is balanced between seven permitted variants and seven blocked cases; it is not a general fraud benchmark.
+The unit suite uses actual PDFium rendering, Tesseract OCR and QR decoding, with a **clearly named deterministic provider double** for accounting/permissions/failure-path checks. The live evaluator uses the actual Qwen model and no substitute. Results identify their scope and source-content hash. The 16-case full-workflow corpus contains seven permitted variants and nine blocked cases; it is not a general fraud benchmark. Two injection PDFs deliberately have consistent payment fields: the evidence-only evaluator expects agreement, while the real semantic guard must block the full workflow. Both expectations are recorded explicitly in the manifest.
 
 ## Architecture and trust boundary
 
@@ -102,7 +102,16 @@ See [architecture](docs/architecture.md), [judge walkthrough](docs/judge-walkthr
 
 The API is documented at `/docs` with a machine-readable `/openapi.json`. A signed capability is accepted through the HttpOnly session cookie or `Authorization: Bearer …`. Capability issuance is a trusted server operation; payload fields do not grant roles.
 
-`POST /api/sdk/propose` accepts `document_id` and an exact `payment` object (`supplier_id`, `obligation_id`, `invoice_number`, `iban`, `amount_minor`, `currency`). It runs the same evidence/action and semantic controls. `POST /api/proposals/{id}/execute` accepts **only** `approval_token`; callers cannot change the recipient or amount after approval.
+`POST /api/sdk/propose` accepts `document_id` and an exact `payment` object (`supplier_id`, `obligation_id`, `invoice_number`, `amount_minor`, `currency`, plus an account selector). Agent capabilities use **`account_ref`**, resolved by the gateway; full `iban` is accepted only for authorized operator/administrator clients. It runs the same evidence/action and semantic controls. `POST /api/proposals/{id}/execute` accepts **only** `approval_token`; callers cannot change the recipient or amount after approval.
+
+An administrator may issue a private scoped agent capability through `POST /api/agent/capability`. `GET /api/agent/evidence/{document_id}` returns minimized text and account handles, counts the registered resource-tool attempt, and enforces workspace ownership. Agent capabilities cannot read the full supplier master, invoice render or resolved bank account, switch into a human persona, update policy/master data, approve, or release. The proposal response remains minimized for agents. A runnable proposal-only client is packaged:
+
+```sh
+# Set RENDERGUARD_AGENT_TOKEN privately in your shell; never commit it.
+uv run python -m scripts.sdk_demo --document <processed-document-id>
+```
+
+`scripts/verify.sh` runs the complete portable control/evidence check. An optional GitHub Actions template with pinned official actions and report artifacts is provided in `docs/ci-workflow.example.yaml`; it is not installed as an active workflow. Server-side Linux verification and the separate live model/browser reports are included in the package. Provider-double runs never claim to perform live model evaluation.
 
 Generic implemented boundaries include `model.request`, `model.response`, `tool.call`, `resource.read`, `mcp.discovery`, and `model.load`. The playground is an inspection harness. Payment proposal and release are the concrete integrated tool effects; there is no claim that a probe forwards arbitrary MCP traffic or loads external artifacts.
 

@@ -225,6 +225,7 @@ class Payments:
                 ("amounts_minor", "PDF amount agreement"),
                 ("currencies", "PDF currency agreement"),
                 ("invoice_numbers", "PDF invoice agreement"),
+                ("obligation_ids", "PDF purchase-order agreement"),
             ]:
                 mv, vv = set(machine.get(field, [])), set(visible.get(field, []))
                 conflict = bool(mv and vv and mv != vv)
@@ -476,6 +477,12 @@ class Payments:
             )
         )
         row["receipt"] = receipt["data"] if receipt else None
+        row["stale"] = (
+            False
+            if receipt
+            else row["binding"]
+            != self.binding(workspace, self.document(workspace, row["document"]), row["payment"])
+        )
         return row
 
     async def prepare(self, principal, document_id):

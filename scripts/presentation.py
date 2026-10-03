@@ -350,7 +350,7 @@ def build(target: Path, stage="draft"):
     text(
         60,
         116,
-        f"Evidence-only raster/OCR corpus: {evidence.get('passed', 0)}/{evidence.get('total', 0)}; seven legitimate variants + seven blocked cases.",
+        f"Evidence expectations: {evidence.get('passed', 0)}/{evidence.get('total', 0)}. Full workflow: seven legitimate variants + nine blocked cases.",
         15,
         color=MUTED,
     )

@@ -118,14 +118,16 @@ def main():
     cases = []
     with tempfile.TemporaryDirectory(prefix="renderguard-evidence-") as tmp:
         for item in manifest:
+            expected = item["expected"] if args.url else item.get("evidence_expected", item["expected"])
             try:
                 result, telemetry = live(item, args.url) if args.url else offline(item, Path(tmp))
                 case = {
                     "id": item["id"],
                     "title": item["title"],
-                    "expected": item["expected"],
+                    "expected": expected,
+                    "full_workflow_expected": item["expected"],
                     "verdict": result["verdict"],
-                    "passed": result["verdict"] == item["expected"],
+                    "passed": result["verdict"] == expected,
                     "failures": [
                         {k: v for k, v in c.items() if k != "telemetry"}
                         for c in result["checks"]
@@ -136,7 +138,7 @@ def main():
             except Exception as exc:
                 case = {
                     "id": item["id"],
-                    "expected": item["expected"],
+                    "expected": expected,
                     "verdict": "error",
                     "passed": False,
                     "error": type(exc).__name__ + ": " + str(exc)[:300],
@@ -147,6 +149,7 @@ def main():
     values.sort()
     report = {
         "status": "complete",
+        "mode": "full_live_workflow" if args.url else "offline_evidence_only",
         "generated_at": now(),
         "source_sha": source_hash(),
         "total": len(cases),

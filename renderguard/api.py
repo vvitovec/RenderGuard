@@ -6,6 +6,7 @@ import io
 import json
 import os
 import re
+import secrets
 import subprocess
 import sys
 from contextlib import asynccontextmanager
@@ -24,15 +25,16 @@ from fastapi import (
     Response,
     UploadFile,
 )
-from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from .body_limit import BodyLimitMiddleware
 from .gateway import Denied, Gateway, OllamaProvider, Principal
 from .masterdata import seed_workspace
 from .payments import Payments, unpack
 from .policy import Policy, PolicyCatalog
-from .privacy import safe_log
+from .privacy import redact_text, safe_log
 from .store import Store, canonical, now, uid
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,8 +114,11 @@ def create_app(
         version="1.0.0",
         description="Release controls for AI-prepared repeat-supplier SEPA payments. All hosted demo payments are sandbox-only.",
         lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
     )
     app.state.store, app.state.gateway, app.state.payments = store, gateway, payments
+    app.add_middleware(BodyLimitMiddleware)
 
     @app.middleware("http")
     async def security_headers(request, call_next):
@@ -131,8 +136,12 @@ def create_app(
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["X-Frame-Options"] = "DENY"
+        nonce = getattr(request.state, "csp_nonce", None)
+        scripts = "'self'" + (f" 'nonce-{nonce}'" if nonce else "")
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+            "default-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src "
+            + scripts
+            + "; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         )
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
@@ -218,6 +227,16 @@ def create_app(
             "worker_mode": "subprocess" if embedded_worker else "isolated-container",
         }
 
+    @app.get("/docs", include_in_schema=False)
+    async def api_docs(request: Request):
+        nonce = secrets.token_urlsafe(18)
+        request.state.csp_nonce = nonce
+        return HTMLResponse(
+            '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>RenderGuard API reference</title><link rel="stylesheet" href="/swagger-assets/swagger-ui.css"></head><body><div id="swagger-ui"></div><script src="/swagger-assets/swagger-ui-bundle.js"></script><script nonce="'
+            + nonce
+            + '">window.ui=SwaggerUIBundle({url:"/openapi.json",dom_id:"#swagger-ui",deepLinking:true,persistAuthorization:false,validatorUrl:null});</script></body></html>'
+        )
+
     @app.post("/api/demo/start")
     async def start(request: Request, response: Response):
         if os.environ.get("AUTH_MODE", "demo") != "demo":
@@ -276,6 +295,7 @@ def create_app(
 
     @app.get("/api/suppliers")
     async def suppliers(p=Depends(auth)):
+        require(p, {"operator", "reviewer", "admin"})
         return [
             json.loads(row["data"])
             for row in store.all("SELECT data FROM suppliers WHERE workspace=?", (p.workspace,))
@@ -283,6 +303,7 @@ def create_app(
 
     @app.get("/api/obligations")
     async def obligations(p=Depends(auth)):
+        require(p, {"operator", "reviewer", "admin"})
         return [
             json.loads(row["data"])
             for row in store.all("SELECT data FROM obligations WHERE workspace=?", (p.workspace,))
@@ -405,6 +426,7 @@ def create_app(
 
     @app.get("/api/documents")
     async def documents(p=Depends(auth)):
+        require(p, {"operator", "reviewer", "admin"})
         rows = store.all(
             "SELECT id,created,filename,sha,supplier_id,obligation_id,status FROM documents WHERE workspace=? ORDER BY created DESC",
             (p.workspace,),
@@ -421,6 +443,7 @@ def create_app(
 
     @app.get("/api/documents/{document_id}")
     async def document(document_id: str, p=Depends(auth)):
+        require(p, {"operator", "reviewer", "admin"})
         doc = payments.consume_worker_result(p.workspace, document_id)
         doc["evidence_decision"] = payments.evidence_checks(p.workspace, doc)
         latest = store.one(
@@ -432,6 +455,7 @@ def create_app(
 
     @app.get("/api/documents/{document_id}/pages/{number}")
     async def page(document_id: str, number: int, p=Depends(auth)):
+        require(p, {"operator", "reviewer", "admin"})
         doc = payments.document(p.workspace, document_id)
         if doc["status"] != "ready" or number not in [x["page"] for x in doc["data"].get("pages", [])]:
             raise HTTPException(404, "Rendered page is not available")
@@ -445,7 +469,65 @@ def create_app(
     @app.post("/api/sdk/propose")
     async def propose(body: ProposalBody, p=Depends(auth)):
         require(p, {"operator", "agent", "admin"})
-        return await payments.propose(p, body.document_id, body.payment)
+        payment = dict(body.payment)
+        if p.role == "agent":
+            if "iban" in payment:
+                raise Denied(
+                    "agent_account",
+                    "Agent proposals use account_ref; full bank-account resolution belongs to the trusted gateway",
+                )
+            doc = payments.consume_worker_result(p.workspace, body.document_id)
+            candidate = payments.candidate(doc)
+            handle = payment.pop("account_ref", None)
+            payment["iban"] = candidate["iban"] if handle == "account_1" else "UNRECOGNIZED"
+        proposal = await payments.propose(p, body.document_id, payment)
+        if p.role == "agent":
+            proposal["payment"] = {k: v for k, v in proposal["payment"].items() if k != "iban"}
+            proposal["payment"]["account_ref"] = body.payment.get("account_ref", "UNRECOGNIZED")
+        return proposal
+
+    @app.post("/api/agent/capability")
+    async def agent_capability(p=Depends(auth)):
+        require(p, {"admin"})
+        token = capability(p.workspace, "agent", False)
+        store.event(
+            p.workspace,
+            "agent.capability_issued",
+            "allow",
+            "identity",
+            {"role": "agent", "scope": "own workspace"},
+        )
+        return {
+            "agent_token": token,
+            "scope": p.workspace,
+            "role": "agent",
+            "message": "Keep this capability private. It cannot switch personas, approve, release, or read full bank records.",
+        }
+
+    @app.get("/api/agent/evidence/{document_id}")
+    async def agent_evidence(document_id: str, p=Depends(auth)):
+        require(p, {"agent", "operator", "admin"})
+        gate = gateway.evaluate(p, "tool.call", {"tool": "read_evidence", "document_id": document_id})
+        if gate["verdict"] != "allow":
+            raise Denied("evidence_tool", gate["summary"], gate["verdict"])
+        doc = payments.consume_worker_result(p.workspace, document_id)
+        if doc["status"] != "ready":
+            raise Denied("evidence_not_ready", "Processed document evidence is not ready", "review")
+        evidence = doc["data"]
+        accounts = list(dict.fromkeys(evidence["visible"]["ibans"] + evidence["machine"]["ibans"]))
+        handles = {account: f"account_{i + 1}" for i, account in enumerate(accounts)}
+        text, _ = redact_text(evidence["machine_text"] or evidence["visible_text"], handles)
+        candidate = payments.candidate(doc)
+        visible_payment = {k: v for k, v in candidate.items() if k != "iban"}
+        visible_payment["account_ref"] = handles.get(candidate["iban"], "UNESTABLISHED")
+        return {
+            "document_id": document_id,
+            "source_hash": doc["sha"],
+            "invoice_text": text,
+            "visible_payment": visible_payment,
+            "evidence_verdict": payments.evidence_checks(p.workspace, doc)["verdict"],
+            "policy_version": catalog.get(p.workspace)[1],
+        }
 
     @app.post("/api/proposals/{proposal_id}/approve")
     async def approve(proposal_id: str, p=Depends(auth)):
@@ -620,7 +702,9 @@ def create_app(
 
     @app.get("/api/evaluation")
     async def evaluation(p=Depends(auth)):
-        target = ROOT / "evals/results.json"
+        target = ROOT / "evals/live-pipeline.json"
+        if not target.exists():
+            target = ROOT / "evals/results.json"
         return (
             json.loads(target.read_text())
             if target.exists()
@@ -633,6 +717,8 @@ def create_app(
     dist = ROOT / "dist"
     if dist.exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+        if (dist / "swagger").exists():
+            app.mount("/swagger-assets", StaticFiles(directory=dist / "swagger"), name="swagger-assets")
 
         @app.get("/{path:path}")
         async def frontend(path: str):

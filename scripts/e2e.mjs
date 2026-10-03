@@ -39,8 +39,9 @@ try{
   await page.getByRole('button',{name:'Controls',exact:true}).click();await page.getByLabel('Signature feed · workspace override').fill(JSON.stringify({version:'browser-judge-edit',entries:[]},null,2));await page.getByRole('button',{name:'Apply signature catalog',exact:true}).click();await page.getByText('Signature catalog saved for this workspace.',{exact:false}).waitFor();
  });
  await step('Mobile workflow stays within viewport and remains usable',async()=>{
-  await page.setViewportSize({width:390,height:844});await page.getByRole('button',{name:'Workbench',exact:true}).click();await page.getByRole('tab',{name:'Rendered page',exact:true}).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.screenshot({path:out+'/mobile-workbench.png',fullPage:true});
+  await page.setViewportSize({width:390,height:844});await page.getByRole('button',{name:'Workbench',exact:true}).click();await page.getByRole('tab',{name:'Rendered page',exact:true}).click();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));await page.locator('.render img').evaluate(img=>img.decode());await page.screenshot({path:out+'/mobile-workbench.png',fullPage:true});
  });
+ await step('Self-hosted API reference loads under the content security policy',async()=>{await page.goto(base+'/docs');await page.getByRole('heading',{name:/RenderGuard.*OAS/}).waitFor();assert.ok(await page.getByText('/api/documents/upload',{exact:true}).count());});
  assert.deepEqual(errors,[],'Browser runtime errors');
  const report={base_url:base,recorded_at:new Date().toISOString(),passed:steps.length,total:steps.length,scope:'Actual own-app headless Chrome, local model and isolated PDF worker; no mocked network',runtime_errors:errors,steps};
  await mkdir('evals',{recursive:true});await writeFile('evals/browser.json',JSON.stringify(report,null,2)+'\n');

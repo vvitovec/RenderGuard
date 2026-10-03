@@ -4,6 +4,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY src ./src
 COPY index.html tsconfig.json vite.config.ts ./
+COPY scripts/copy-swagger.mjs ./scripts/copy-swagger.mjs
 RUN npm run build
 
 FROM python:3.12-slim-bookworm AS runtime
