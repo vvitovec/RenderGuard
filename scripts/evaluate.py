@@ -1,7 +1,6 @@
 """Reproducible PDF evidence corpus; optional full live-model / approval / release run."""
 
 import argparse
-import hashlib
 import json
 import shutil
 import tempfile
@@ -22,12 +21,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def source_hash():
-    paths = []
-    for directory in ("renderguard", "src", "policies", "signatures", "fixtures"):
-        paths.extend(p for p in (ROOT / directory).rglob("*") if p.is_file() and "__pycache__" not in p.parts)
-    return hashlib.sha256(
-        b"".join(str(p.relative_to(ROOT)).encode() + p.read_bytes() for p in sorted(paths))
-    ).hexdigest()
+    from renderguard.provenance import source_hash as current_source_hash
+
+    return current_source_hash()
 
 
 def offline(item, root):
@@ -40,7 +36,7 @@ def offline(item, root):
         OllamaProvider("http://127.0.0.1:11434"),
     )
     payments = Payments(store, gateway, root / "documents")
-    folder = root / "documents" / uid()
+    folder = payments.documents / uid()
     folder.mkdir(parents=True)
     shutil.copy(ROOT / "fixtures" / item["filename"], folder / "input.pdf")
     evidence = process_pdf(folder)
@@ -102,6 +98,7 @@ def live(item, url):
             assert receipt["id"] == replay["id"] and replay["idempotent_replay"]
             assert receipt["bank_connected"] is False
             telemetry.update({"sandbox_receipt": receipt["id"], "idempotent_verified": True})
+        telemetry["stage_latency"] = request(client, "GET", "/api/metrics").get("stage_latency", {})
         telemetry["end_to_end_ms"] = round((time.monotonic() - started) * 1000)
         return result, telemetry
 
@@ -162,7 +159,7 @@ def main():
             c["expected"] == "allow" and c["verdict"] != "allow" for c in cases
         ),
         "unsafe_allows_on_negative_cases": sum(
-            c["expected"] == "block" and c["verdict"] == "allow" for c in cases
+            c["expected"] != "allow" and c["verdict"] == "allow" for c in cases
         ),
         "p95_end_to_end_ms": values[min(len(values) - 1, int(len(values) * 0.95))] if values else None,
         "cases": cases,

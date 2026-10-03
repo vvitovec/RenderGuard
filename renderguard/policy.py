@@ -22,10 +22,13 @@ class Controls(StrictModel):
     signatures: bool = True
     require_approval: bool = True
     evidence_consistency: bool = True
+    hidden_text_min_tokens: int = Field(default=6, ge=1, le=1000)
+    hidden_text_missing_ratio: float = Field(default=0.65, ge=0, le=1)
+    hidden_text_action: Literal["review", "block"] = "review"
 
 
 class Budgets(StrictModel):
-    max_model_calls: int = Field(default=8, ge=0, le=100)
+    max_model_calls: int = Field(default=24, ge=0, le=100)
     max_tool_calls: int = Field(default=12, ge=0, le=200)
     max_input_bytes: int = Field(default=24000, ge=1, le=100000)
     max_output_tokens: int = Field(default=700, ge=1, le=4096)
@@ -89,19 +92,48 @@ def merge(base: dict, override: dict) -> dict:
     return result
 
 
+def delta(base: dict, value: dict) -> dict:
+    result = {}
+    for key, item in value.items():
+        if isinstance(item, dict) and isinstance(base.get(key), dict):
+            changed = delta(base[key], item)
+            if changed:
+                result[key] = changed
+        elif item != base.get(key):
+            result[key] = copy.deepcopy(item)
+    return result
+
+
+def overridden_keys(value: dict, prefix: str = "") -> list[str]:
+    return [
+        path
+        for key, item in value.items()
+        for path in (overridden_keys(item, prefix + key + ".") if isinstance(item, dict) else [prefix + key])
+    ]
+
+
 class PolicyCatalog:
     def __init__(self, store: Store, path: Path, signatures: Path):
         self.store, self.path, self.signature_path = store, path, signatures
         self.last_good = Policy.model_validate(yaml.safe_load(path.read_text())).model_dump()
         self.last_error = None
+        for row in self.store.all("SELECT id,policy FROM workspaces"):
+            legacy = json.loads(row["policy"] or "{}")
+            changes = delta(self.last_good, merge(self.last_good, legacy))
+            if legacy != changes:
+                self.store.execute("UPDATE workspaces SET policy=? WHERE id=?", (canonical(changes), row["id"]))
 
-    def get(self, workspace: str) -> tuple[Policy, str]:
+    def baseline(self) -> dict:
         try:
             base = Policy.model_validate(yaml.safe_load(self.path.read_text())).model_dump()
             self.last_good, self.last_error = base, None
         except Exception as exc:
             base = self.last_good
             self.last_error = str(exc)[:500]
+        return base
+
+    def get(self, workspace: str) -> tuple[Policy, str]:
+        base = self.baseline()
         row = self.store.one("SELECT policy FROM workspaces WHERE id=?", (workspace,))
         override = json.loads(row["policy"] or "{}") if row else {}
         policy = Policy.model_validate(merge(base, override))
@@ -110,7 +142,8 @@ class PolicyCatalog:
     def update(self, workspace: str, value: dict) -> str:
         policy = Policy.model_validate(value)
         self.store.execute(
-            "UPDATE workspaces SET policy=? WHERE id=?", (canonical(policy.model_dump()), workspace)
+            "UPDATE workspaces SET policy=? WHERE id=?",
+            (canonical(delta(self.baseline(), policy.model_dump())), workspace),
         )
         version = digest(policy.model_dump())[:20]
         self.store.event(
@@ -121,6 +154,41 @@ class PolicyCatalog:
             {"version": version, "profile": policy.profile},
         )
         return version
+
+    def metadata(self, workspace: str) -> dict:
+        base = self.baseline()
+        row = self.store.one("SELECT policy FROM workspaces WHERE id=?", (workspace,))
+        overrides = json.loads(row["policy"] or "{}") if row else {}
+        # Legacy full-policy overrides retain all differing values. Values equal to
+        # the baseline become inherited; no user-selected differing value is lost.
+        changes = delta(base, merge(base, overrides))
+        return {"baseline_version": digest(base)[:20], "overridden_keys": overridden_keys(changes)}
+
+    def snapshot(self, workspace: str) -> tuple[Policy, dict, dict | None]:
+        base = self.baseline()
+        row = self.store.one("SELECT policy,feed FROM workspaces WHERE id=?", (workspace,))
+        overrides = json.loads(row["policy"] or "{}") if row else {}
+        policy = Policy.model_validate(merge(base, overrides))
+        feed = None
+        try:
+            feed = self.validate_feed(
+                json.loads(row["feed"]) if row and row["feed"] else json.loads(self.signature_path.read_text())
+            )
+            signature_hash = digest(feed)
+        except (ValueError, OSError):
+            signature_hash = "unavailable"
+        authority = {
+            "policy_version": digest(policy.model_dump())[:20],
+            "signature_hash": signature_hash,
+            "disabled_controls": [
+                name for name in ("semantic", "signatures", "require_approval", "evidence_consistency")
+                if not getattr(policy.controls, name)
+            ],
+        }
+        return policy, authority, feed
+
+    def authority(self, workspace: str) -> dict:
+        return self.snapshot(workspace)[1]
 
     def feed(self, workspace: str | None = None) -> dict:
         row = self.store.one("SELECT feed FROM workspaces WHERE id=?", (workspace,)) if workspace else None
@@ -148,6 +216,7 @@ class PolicyCatalog:
                     "field",
                     "forbidden_prefixes",
                     "forbidden_values",
+                    "forbidden_substrings",
                     "reference",
                     "description",
                 }
@@ -160,11 +229,11 @@ class PolicyCatalog:
                 for key in ("id", "kind", "field")
             ):
                 raise ValueError("Malformed signature entry")
-            for key in ("forbidden_prefixes", "forbidden_values"):
+            for key in ("forbidden_prefixes", "forbidden_values", "forbidden_substrings"):
                 if key in item and (
                     not isinstance(item[key], list)
                     or len(item[key]) > 30
-                    or any(not isinstance(x, str) or len(x) > 500 for x in item[key])
+                    or any(not isinstance(x, str) or not 1 <= len(x) <= 500 for x in item[key])
                 ):
                     raise ValueError(
                         "Signatures contain only literal data; executable expressions are forbidden"

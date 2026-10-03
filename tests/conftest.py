@@ -51,7 +51,10 @@ def evidence_cache(tmp_path_factory):
         folder = root / item["id"]
         folder.mkdir()
         shutil.copy(ROOT / "fixtures" / item["filename"], folder / "input.pdf")
-        evidence = process_pdf(folder)
+        try:
+            evidence = process_pdf(folder)
+        except Exception as exc:
+            evidence = {"error": str(exc)[:400]}
         cache[item["id"]] = (folder, evidence)
     return cache
 
@@ -72,9 +75,10 @@ def import_case(env, case="clean"):
     doc = response.json()
     folder = app.state.payments.documents / doc["id"]
     source, evidence = cache[case]
-    for page in evidence["pages"]:
+    for page in evidence.get("pages", []):
         shutil.copy(source / f"page-{page['page']}.png", folder / f"page-{page['page']}.png")
-    write_result(folder, {"ok": True, "evidence": evidence})
+    write_result(folder, {"ok": True, "evidence": evidence} if "error" not in evidence
+                 else {"ok": False, "error": evidence["error"]})
     response = client.get("/api/documents/" + doc["id"])
     assert response.status_code == 200, response.text
     return response.json()

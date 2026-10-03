@@ -15,12 +15,12 @@ def redact_text(value: str, accounts: dict[str, str] | None = None) -> tuple[str
             pattern = r"\b" + r"\s*".join(re.escape(c) for c in account) + r"\b"
             value, count = re.subn(pattern, handle, value, flags=re.I)
             if count:
-                kinds.append("account_handle")
+                kinds.extend(["account_handle"] * count)
     for account in find_ibans(value):
         pattern = r"\b" + r"\s*".join(re.escape(c) for c in account) + r"\b"
         value, count = re.subn(pattern, "[REDACTED_ACCOUNT]", value, flags=re.IGNORECASE)
         if count:
-            kinds.append("bank_account")
+            kinds.extend(["bank_account"] * count)
     for regex, replacement, label in [
         (SECRET, "[REDACTED_SECRET]", "secret"),
         (EMAIL, "[REDACTED_EMAIL]", "email"),
@@ -28,8 +28,8 @@ def redact_text(value: str, accounts: dict[str, str] | None = None) -> tuple[str
     ]:
         value, count = regex.subn(replacement, value)
         if count:
-            kinds.append(label)
-    return value, list(dict.fromkeys(kinds))
+            kinds.extend([label] * count)
+    return value, kinds
 
 
 def safe_log(value: Any) -> Any:

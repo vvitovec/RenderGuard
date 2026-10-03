@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
+from collections import Counter
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlparse
@@ -45,6 +46,18 @@ def decision(checks: list[dict], version: str, **extra) -> dict:
         else "Implemented controls passed; human approval is still required.",
         **extra,
     }
+
+
+def compact_checks(checks: list[dict]) -> list[dict]:
+    """Audit control outcomes without raw evidence, prompts or model telemetry."""
+    return [
+        {key: item[key] for key in ("control", "title", "verdict", "reason", "risk", "threshold", "review_lower_bound") if key in item}
+        for item in checks
+    ]
+
+
+def usage_count(value) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
 
 
 class SemanticResult(BaseModel):
@@ -121,11 +134,12 @@ class OpenAICompatibleProvider:
             )
             response.raise_for_status()
             value = response.json()
-        usage = value.get("usage", {})
+        usage = value.get("usage")
+        usage = usage if isinstance(usage, dict) else {}
         return {
             "content": value["choices"][0]["message"]["content"],
-            "input_tokens": usage.get("prompt_tokens", 0),
-            "output_tokens": usage.get("completion_tokens", 0),
+            "input_tokens": usage_count(usage.get("prompt_tokens")),
+            "output_tokens": usage_count(usage.get("completion_tokens")),
             "provider": "openai-compatible",
             "duration_ms": None,
         }
@@ -135,10 +149,13 @@ class Gateway:
     def __init__(self, store: Store, catalog: PolicyCatalog, provider: Any):
         self.store, self.catalog, self.provider = store, catalog, provider
         self.semaphore = asyncio.Semaphore(1)
+        self.admitted = 0
+        self.admission_limit = 8
 
     def evaluate(self, principal: Principal, kind: str, payload: dict) -> dict:
         started = time.monotonic()
-        policy, version = self.catalog.get(principal.workspace)
+        policy, authority, feed = self.catalog.snapshot(principal.workspace)
+        version = authority["policy_version"]
         checks, output = [], dict(payload)
         allowed_roles = {
             "model.request": {"operator", "agent", "admin"},
@@ -147,6 +164,7 @@ class Gateway:
             "mcp.discovery": {"admin"},
             "model.load": {"admin"},
             "resource.read": {"operator", "reviewer", "agent", "admin"},
+            "document.text": {"operator", "agent", "admin"},
         }
         permitted = principal.role in allowed_roles.get(kind, set())
         checks.append(
@@ -270,15 +288,18 @@ class Gateway:
             )
         if policy.controls.signatures:
             try:
-                feed = self.catalog.feed(principal.workspace)
+                if feed is None:
+                    raise ValueError("Signature feed unavailable")
                 matches = []
                 for item in feed["entries"]:
                     if item["kind"] != kind:
                         continue
-                    value = str(payload.get(item.get("field", ""), "")).lower()
+                    value = str(payload.get(item.get("field", ""), "")).casefold()
                     if any(
-                        value.startswith(p.lower()) for p in item.get("forbidden_prefixes", [])
-                    ) or value in [p.lower() for p in item.get("forbidden_values", [])]:
+                        value.startswith(p.casefold()) for p in item.get("forbidden_prefixes", [])
+                    ) or value in [p.casefold() for p in item.get("forbidden_values", [])] or any(
+                        p.casefold() in value for p in item.get("forbidden_substrings", [])
+                    ):
                         matches.append(item["id"])
                 checks.append(
                     check(
@@ -305,7 +326,8 @@ class Gateway:
                 check("signatures", "Historical attack indicators", "skip", "Disabled by the active policy.")
             )
         result = decision(
-            checks, version, payload=output, latency_ms=round((time.monotonic() - started) * 1000, 3)
+            checks, version, authority=authority, payload=output,
+            latency_ms=round((time.monotonic() - started) * 1000, 3)
         )
         self.store.event(
             principal.workspace,
@@ -318,6 +340,9 @@ class Gateway:
                 "checks": checks,
                 "latency_ms": result["latency_ms"],
                 "payload_preview": safe_log(output),
+                "redaction_counts": dict(Counter(
+                    label for item in checks for label in item.get("redactions", [])
+                )),
             },
         )
         return result
@@ -378,6 +403,7 @@ class Gateway:
         return reservation
 
     def settle(self, reservation: str, input_tokens: int | None, output_tokens: int | None, model: str):
+        input_tokens, output_tokens = usage_count(input_tokens), usage_count(output_tokens)
         with self.store.transaction() as db:
             row = db.execute("SELECT * FROM reservations WHERE id=?", (reservation,)).fetchone()
             if not row or row["status"] != "pending":
@@ -398,6 +424,18 @@ class Gateway:
                 (tokens, cost, row["tokens"], row["cost"], row["workspace"]),
             )
 
+    def cancel_before_dispatch(self, reservation: str):
+        with self.store.transaction() as db:
+            row = db.execute("SELECT * FROM reservations WHERE id=?", (reservation,)).fetchone()
+            if not row or row["status"] != "pending":
+                return
+            db.execute("UPDATE reservations SET status='not_dispatched' WHERE id=?", (reservation,))
+            db.execute(
+                "UPDATE workspaces SET active_calls=MAX(active_calls-1,0),reserved_tokens=reserved_tokens-?,"
+                "reserved_cost=reserved_cost-? WHERE id=?",
+                (row["tokens"], row["cost"], row["workspace"]),
+            )
+
     async def model(
         self,
         principal: Principal,
@@ -406,7 +444,8 @@ class Gateway:
         purpose: str,
         max_output: int | None = None,
     ) -> dict:
-        policy, version = self.catalog.get(principal.workspace)
+        policy, authority, _ = self.catalog.snapshot(principal.workspace)
+        version = authority["policy_version"]
         if not policy.allowed_models:
             raise Denied("models", "No model is allowed by the current policy")
         model = policy.allowed_models[0]
@@ -429,12 +468,26 @@ class Gateway:
             )
         reservation = self.reserve(principal, model, input_bound, output_bound)
         started = time.monotonic()
+        dispatched = False
+        admitted = False
+        queue_wait_ms = 0
+        inference_ms = None
         try:
+            if self.admitted >= self.admission_limit:
+                raise Denied("global_admission", "The bounded shared model queue is full; retry later", "review")
+            self.admitted += 1
+            admitted = True
             async with asyncio.timeout(policy.budgets.timeout_seconds):
                 async with self.semaphore:
+                    queue_wait_ms = round((time.monotonic() - started) * 1000)
+                    if self.catalog.authority(principal.workspace) != authority:
+                        raise Denied("authority_changed", "Policy or signature feed changed while queued; prepare again", "review")
+                    inference_started = time.monotonic()
+                    dispatched = True
                     result = await self.provider.chat(
                         model, cleaned, schema, output_bound, policy.budgets.timeout_seconds
                     )
+                    inference_ms = round((time.monotonic() - inference_started) * 1000)
             self.settle(reservation, result.get("input_tokens"), result.get("output_tokens"), model)
             if isinstance(result.get("output_tokens"), int) and result["output_tokens"] > output_bound:
                 raise Denied(
@@ -451,10 +504,10 @@ class Gateway:
             if filtered["verdict"] != "allow":
                 raise Denied("model_output", filtered["summary"])
             payload = json.loads(filtered["payload"]["text"])
-            if self.catalog.get(principal.workspace)[1] != version:
+            if self.catalog.authority(principal.workspace) != authority:
                 raise Denied(
-                    "policy_changed",
-                    "Policy changed during model processing; prepare again under the new policy",
+                    "authority_changed",
+                    "Policy or signature feed changed during model processing; prepare again",
                     "review",
                 )
             elapsed = round((time.monotonic() - started) * 1000)
@@ -465,6 +518,8 @@ class Gateway:
                 "input_tokens": result.get("input_tokens"),
                 "output_tokens": result.get("output_tokens"),
                 "latency_ms": elapsed,
+                "queue_wait_ms": queue_wait_ms,
+                "inference_ms": inference_ms,
                 "policy_version": version,
                 "redactions": list(set(redactions)),
                 "outbound_messages": cleaned,
@@ -478,13 +533,20 @@ class Gateway:
             )
             return {"data": payload, "telemetry": telemetry}
         except BaseException as exc:
-            self.settle(reservation, None, None, model)
+            if dispatched:
+                if inference_ms is None:
+                    inference_ms = round((time.monotonic() - inference_started) * 1000)
+                self.settle(reservation, None, None, model)
+            else:
+                queue_wait_ms = round((time.monotonic() - started) * 1000)
+                self.cancel_before_dispatch(reservation)
             self.store.event(
                 principal.workspace,
                 "model.failed",
                 "review",
                 "model",
-                {"purpose": purpose, "policy_version": version, "reason": type(exc).__name__},
+                {"purpose": purpose, "policy_version": version, "reason": type(exc).__name__,
+                 "dispatched": dispatched, "queue_wait_ms": queue_wait_ms, "inference_ms": inference_ms},
             )
             if isinstance(exc, Denied):
                 raise
@@ -495,8 +557,11 @@ class Gateway:
                 "Model unavailable, timed out, or returned invalid structured output; action held",
                 "review",
             ) from exc
+        finally:
+            if admitted:
+                self.admitted -= 1
 
-    async def semantic(self, principal: Principal, text: str) -> dict:
+    async def semantic(self, principal: Principal, text: str | dict) -> dict:
         policy, version = self.catalog.get(principal.workspace)
         if not policy.controls.semantic:
             return check("semantic", "Semantic instruction check", "skip", "Disabled by the active policy.")
@@ -515,21 +580,32 @@ class Gateway:
                 240,
             )
             parsed = SemanticResult.model_validate(result["data"])
-            verdict = "block" if parsed.risk >= policy.controls.semantic_threshold else "pass"
-            return check(
+            verdict = (
+                "block" if parsed.risk >= policy.controls.semantic_threshold
+                else "review" if policy.profile == "balanced" and parsed.risk >= max(0, policy.controls.semantic_threshold - 0.2)
+                else "pass"
+            )
+            outcome = check(
                 "semantic",
                 "Semantic instruction check",
                 verdict,
                 parsed.reason,
                 risk=parsed.risk,
                 threshold=policy.controls.semantic_threshold,
+                review_lower_bound=max(0, policy.controls.semantic_threshold - 0.2)
+                if policy.profile == "balanced" else None,
                 telemetry=result["telemetry"],
                 policy_version=version,
             )
         except (Denied, ValueError) as exc:
-            return check(
+            outcome = check(
                 "semantic",
                 "Semantic instruction check",
                 getattr(exc, "verdict", "review"),
                 getattr(exc, "reason", "Unsupported semantic guard schema; action held."),
             )
+        self.store.event(principal.workspace, "semantic.result",
+                         "allow" if outcome["verdict"] == "pass" else outcome["verdict"], "semantic",
+                         {"checks": compact_checks([outcome]), "risk": outcome.get("risk"),
+                          "threshold": policy.controls.semantic_threshold, "profile": policy.profile})
+        return outcome

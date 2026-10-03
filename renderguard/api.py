@@ -9,6 +9,8 @@ import re
 import secrets
 import subprocess
 import sys
+import time
+from collections import Counter
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
@@ -30,11 +32,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from .body_limit import BodyLimitMiddleware
-from .gateway import Denied, Gateway, OllamaProvider, Principal
+from .gateway import Denied, Gateway, OllamaProvider, Principal, compact_checks
 from .masterdata import seed_workspace
 from .payments import Payments, unpack
 from .policy import Policy, PolicyCatalog
-from .privacy import redact_text, safe_log
+from .privacy import safe_log
+from .provenance import source_hash
 from .store import Store, canonical, now, uid
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -214,6 +217,7 @@ def create_app(
             "policy_error": catalog.last_error,
             "usage": usage,
             "release_sha": os.environ.get("RELEASE_SHA", "development"),
+            "source_sha": source_hash(ROOT),
             "demo_personas": os.environ.get("AUTH_MODE", "demo") == "demo",
         }
 
@@ -477,9 +481,11 @@ def create_app(
                     "Agent proposals use account_ref; full bank-account resolution belongs to the trusted gateway",
                 )
             doc = payments.consume_worker_result(p.workspace, body.document_id)
-            candidate = payments.candidate(doc)
+            if doc["status"] != "ready":
+                raise Denied("evidence_not_ready", "Processed document evidence is not ready", "review")
             handle = payment.pop("account_ref", None)
-            payment["iban"] = candidate["iban"] if handle == "account_1" else "UNRECOGNIZED"
+            reverse = {value: account for account, value in payments.handles(doc).items()}
+            payment["iban"] = reverse.get(handle, "UNRECOGNIZED")
         proposal = await payments.propose(p, body.document_id, payment)
         if p.role == "agent":
             proposal["payment"] = {k: v for k, v in proposal["payment"].items() if k != "iban"}
@@ -513,17 +519,16 @@ def create_app(
         doc = payments.consume_worker_result(p.workspace, document_id)
         if doc["status"] != "ready":
             raise Denied("evidence_not_ready", "Processed document evidence is not ready", "review")
-        evidence = doc["data"]
-        accounts = list(dict.fromkeys(evidence["visible"]["ibans"] + evidence["machine"]["ibans"]))
-        handles = {account: f"account_{i + 1}" for i, account in enumerate(accounts)}
-        text, _ = redact_text(evidence["machine_text"] or evidence["visible_text"], handles)
+        handles = payments.handles(doc)
+        representations = payments.representations(p.workspace, doc)
         candidate = payments.candidate(doc)
         visible_payment = {k: v for k, v in candidate.items() if k != "iban"}
         visible_payment["account_ref"] = handles.get(candidate["iban"], "UNESTABLISHED")
         return {
             "document_id": document_id,
             "source_hash": doc["sha"],
-            "invoice_text": text,
+            "invoice_text": canonical(representations),
+            "representations": representations,
             "visible_payment": visible_payment,
             "evidence_verdict": payments.evidence_checks(p.workspace, doc)["verdict"],
             "policy_version": catalog.get(p.workspace)[1],
@@ -535,9 +540,12 @@ def create_app(
 
     @app.post("/api/proposals/{proposal_id}/execute")
     async def execute(proposal_id: str, body: ExecutionBody, p=Depends(auth)):
+        started = time.monotonic()
+        verdict = "allow"
         try:
             return payments.execute(p, proposal_id, body.approval_token)
         except Denied as exc:
+            verdict = exc.verdict
             store.event(
                 p.workspace,
                 "payment.execution_denied",
@@ -546,6 +554,9 @@ def create_app(
                 {"proposal_id": proposal_id, "reason": exc.reason},
             )
             raise
+        finally:
+            store.event(p.workspace, "executor.stage", verdict, "protected_executor",
+                        {"proposal_id": proposal_id, "latency_ms": round((time.monotonic() - started) * 1000, 3)})
 
     @app.get("/api/policy")
     async def policy(p=Depends(auth)):
@@ -556,6 +567,7 @@ def create_app(
             "error": catalog.last_error,
             "feed": catalog.feed(p.workspace),
             "scope": "isolated demo workspace",
+            **catalog.metadata(p.workspace),
         }
 
     @app.put("/api/signatures")
@@ -582,11 +594,20 @@ def create_app(
         if len(canonical(body.payload).encode()) > 30000:
             raise HTTPException(413, "Interaction exceeds playground size bound")
         result = gateway.evaluate(p, body.kind, body.payload)
+        authority = result["authority"]
         if body.semantic and result["verdict"] == "allow":
             guard = await gateway.semantic(p, str(result["payload"].get("text", "")))
             from .gateway import decision
 
             result = {**result, **decision(result["checks"] + [guard], result["policy_version"])}
+        changed = payments.authority_check(p.workspace, authority)
+        if changed:
+            from .gateway import decision
+
+            result = {**result, **decision(result["checks"] + [changed], result["policy_version"])}
+        store.event(p.workspace, "interaction.final", result["verdict"], "interaction",
+                    {"kind": body.kind, "policy_version": result["policy_version"],
+                     "checks": compact_checks(result["checks"])})
         return result
 
     @app.get("/api/events")
@@ -681,15 +702,95 @@ def create_app(
             verdict: sum(x["verdict"] == verdict for x in rows) for verdict in ("allow", "block", "review")
         }
         controls = {}
+        control_reasons = {}
         for row in rows:
+            if row["kind"] not in ("interaction.final", "payment.proposed"):
+                continue
             for c in row["data"].get("checks", []):
                 if c["verdict"] in ("block", "review"):
                     controls[c["control"]] = controls.get(c["control"], 0) + 1
+                    reasons = control_reasons.setdefault(c["control"], [])
+                    if c["reason"] not in reasons:
+                        reasons.append(c["reason"])
+        final_rows = [row for row in rows if row["kind"] == "interaction.final"]
+        final_interactions = {
+            verdict: sum(row["verdict"] == verdict for row in final_rows)
+            for verdict in ("allow", "block", "review")
+        }
+        final_interactions["total"] = len(final_rows)
+        payment_totals = {name: {"count": 0, "amount_minor": 0}
+                          for name in ("released", "held", "blocked", "pending")}
+        receipt_rows = [unpack(row) for row in store.all(
+            "SELECT receipts.data,proposals.document FROM receipts JOIN proposals ON proposals.id=receipts.proposal "
+            "WHERE receipts.workspace=?", (p.workspace,)
+        )]
+        released_docs = {row["document"] for row in receipt_rows}
+        for row in receipt_rows:
+            payment_totals["released"]["count"] += 1
+            payment_totals["released"]["amount_minor"] += row["data"]["payment"]["amount_minor"]
+        latest = [unpack(row) for row in store.all(
+            "SELECT * FROM proposals WHERE workspace=? ORDER BY created DESC,id DESC", (p.workspace,)
+        )]
+        seen = set()
+        for proposal in latest:
+            if proposal["document"] in seen:
+                continue
+            seen.add(proposal["document"])
+            if proposal["document"] in released_docs:
+                continue
+            category = ("blocked" if proposal["decision"]["verdict"] == "block"
+                        else "held" if proposal["decision"]["verdict"] == "review" else "pending")
+            payment_totals[category]["count"] += 1
+            amount = proposal["payment"].get("amount_minor", 0)
+            payment_totals[category]["amount_minor"] += amount if isinstance(amount, int) and amount > 0 else 0
+
+        def stats(values):
+            values = sorted(value for value in values if isinstance(value, (int, float)) and value >= 0)
+            return {"count": len(values), "p50_ms": values[len(values) // 2] if values else None,
+                    "p95_ms": values[min(len(values) - 1, int(len(values) * 0.95))] if values else None}
+
+        model_rows = [row for row in rows if row["kind"] in ("model.complete", "model.failed")]
+        stage_latency = {
+            "gateway": stats([row["data"].get("latency_ms") for row in rows if row["control"] == "gateway"]),
+            "document": stats([row["data"].get("latency_ms") for row in rows if row["kind"] == "document.ready"]),
+            "evidence": stats([row["data"].get("evidence_ms") for row in rows if row["kind"] == "payment.proposed"]),
+            "semantic": stats([row["data"].get("inference_ms") for row in model_rows
+                               if row["data"].get("purpose") == "semantic_guard"]),
+            "proposal_model": stats([row["data"].get("inference_ms") for row in model_rows
+                                     if row["data"].get("purpose") == "invoice_assistant"]),
+            "queue": stats([row["data"].get("queue_wait_ms") for row in model_rows]),
+            "executor": stats([row["data"].get("latency_ms") for row in rows if row["kind"] == "executor.stage"]),
+        }
+        redactions = Counter()
+        for row in rows:
+            redactions.update(row["data"].get("redaction_counts", {}))
+        current, _ = catalog.get(p.workspace)
+        usage = summary(p)["usage"]
+        budget_values = (
+            ("model_calls", "model_calls", None, current.budgets.max_model_calls),
+            ("tool_calls", "tool_calls", None, current.budgets.max_tool_calls),
+            ("tokens", "tokens", "reserved_tokens", current.budgets.max_tokens),
+            ("cost_microusd", "cost", "reserved_cost", current.budgets.max_cost_microusd),
+            ("concurrency", "active_calls", None, current.budgets.max_concurrent),
+        )
+        budgets = {
+            label: {"used": usage[used], "reserved": usage[reserved] if reserved else 0, "max": maximum,
+                    "remaining": max(0, maximum - usage[used] - (usage[reserved] if reserved else 0))}
+            for label, used, reserved, maximum in budget_values
+        }
         return {
             "events": len(rows),
             "decisions": totals,
             "held_controls": controls,
-            "model_calls": summary(p)["usage"],
+            "held_control_reasons": control_reasons,
+            "model_calls": usage,
+            "final_interactions": final_interactions,
+            "payments": payment_totals,
+            "stage_latency": stage_latency,
+            "redactions": {"total": sum(redactions.values()), "patterns": dict(redactions)},
+            "budgets": budgets,
+            "decisions_scope": "Low-level audit events; final_interactions counts playground verdicts once.",
+            "payments_scope": "Latest proposal per document; released amounts are synthetic ledger effects, not fraud savings.",
             "p50_processing_ms": latency[len(latency) // 2] if latency else None,
             "p95_processing_ms": latency[min(len(latency) - 1, int(len(latency) * 0.95))]
             if latency
@@ -705,7 +806,7 @@ def create_app(
         target = ROOT / "evals/live-pipeline.json"
         if not target.exists():
             target = ROOT / "evals/results.json"
-        return (
+        recorded = (
             json.loads(target.read_text())
             if target.exists()
             else {
@@ -713,6 +814,7 @@ def create_app(
                 "message": "Run the executable suite to generate an evidence-backed report.",
             }
         )
+        return {**recorded, "current_source_sha": source_hash(ROOT)}
 
     dist = ROOT / "dist"
     if dist.exists():

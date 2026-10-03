@@ -59,6 +59,8 @@ class Store:
                   hash TEXT, binding_hash TEXT, expires REAL, consumed REAL, approver TEXT);
                 CREATE TABLE IF NOT EXISTS receipts(id TEXT PRIMARY KEY, workspace TEXT, proposal TEXT UNIQUE,
                   invoice_key TEXT, created REAL, data TEXT, UNIQUE(workspace,invoice_key));
+                CREATE TABLE IF NOT EXISTS obligation_consumption(workspace TEXT, obligation TEXT,
+                  receipt TEXT, status TEXT NOT NULL, PRIMARY KEY(workspace,obligation));
                 CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY, workspace TEXT, created REAL,
                   kind TEXT, verdict TEXT, control TEXT, data TEXT);
                 CREATE TABLE IF NOT EXISTS reservations(id TEXT PRIMARY KEY, workspace TEXT, tokens INTEGER,
@@ -70,6 +72,25 @@ class Store:
                 db.execute("ALTER TABLE reservations ADD COLUMN rates TEXT DEFAULT '{}'")
             if "feed" not in [row["name"] for row in db.execute("PRAGMA table_info(workspaces)")]:
                 db.execute("ALTER TABLE workspaces ADD COLUMN feed TEXT")
+        # Historical receipts are retained verbatim. Ambiguous old effects are locked,
+        # rather than choosing a winner or deleting a receipt during migration.
+        with self.transaction() as db:
+            groups: dict[tuple[str, str], list[str]] = {}
+            for row in db.execute("SELECT id,workspace,data FROM receipts"):
+                try:
+                    obligation = json.loads(row["data"])["payment"]["obligation_id"]
+                    if not isinstance(obligation, str) or not obligation:
+                        raise ValueError("Missing obligation")
+                except (ValueError, KeyError, TypeError):
+                    obligation = "*"
+                groups.setdefault((row["workspace"], obligation), []).append(row["id"])
+            for (workspace, obligation), receipts in groups.items():
+                ambiguous = obligation == "*" or len(receipts) != 1
+                db.execute(
+                    "INSERT INTO obligation_consumption VALUES(?,?,?,?) "
+                    "ON CONFLICT(workspace,obligation) DO UPDATE SET receipt=excluded.receipt,status=excluded.status",
+                    (workspace, obligation, None if ambiguous else receipts[0], "ambiguous" if ambiguous else "released"),
+                )
 
     def connect(self) -> sqlite3.Connection:
         db = sqlite3.connect(self.path, timeout=15, isolation_level=None)

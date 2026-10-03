@@ -23,3 +23,9 @@ output/playwright/*
 !output/playwright/register.png
 !output/playwright/control-probe.png
 !output/playwright/mobile-workbench.png
+
+!output/playwright/controls.png
+!output/playwright/release-detail.png
+!output/playwright/qr-detail.png
+!output/playwright/model-input.png
+!output/playwright/audit-detail.png

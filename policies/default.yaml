@@ -10,8 +10,11 @@ controls:
   signatures: true
   require_approval: true
   evidence_consistency: true
+  hidden_text_min_tokens: 6
+  hidden_text_missing_ratio: 0.65
+  hidden_text_action: review
 budgets:
-  max_model_calls: 8
+  max_model_calls: 24
   max_tool_calls: 12
   max_input_bytes: 24000
   max_output_tokens: 700

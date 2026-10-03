@@ -1,24 +1,31 @@
-# Final verification evidence
+# Verification of the revised entry
 
-Recorded on 3 October 2026 against the actual hosted RenderGuard gateway, isolated Linux PDF worker and dedicated local Qwen2.5:3b model. The final application-content hash is `9eaf8897f6de38407c68d7d369ea52972a91e0e66363a71983238049118f8567`.
+The previous packages remain frozen at their recorded baseline. Revised results are regenerated after the critique-driven changes; source hashes and actual tested release identifiers are retained. The revision is not considered ready until executable controls, real PDF evidence, actual hosted model/workflow, browser and deployment checks pass.
 
-| Check | Result | Evidence and scope |
-|---|---|---|
-| Python controls/integration suite | 83/83 passed | `evals/unit-tests.xml`; includes actual OCR, policy/resource boundaries, role/SDK restrictions, exact approval, persistence and concurrent release; provider doubles are explicitly labelled |
-| Same suite in restricted Linux runtime | 83/83 passed | `evals/linux-unit-tests.xml`; actual deployment image, isolated disposable test state |
-| Actual evidence-only PDF corpus | 16/16 passed on macOS and Linux | `evals/results.json`, `evals/linux-evidence.json`; raster/OCR/text/EPC checks only; two instruction-only invoices correctly pass evidence checks and are blocked later by the semantic control |
-| Full hosted workflow | 16/16 passed | `evals/live-pipeline.json`; seven legitimate variants completed real-model preparation, human review, sandbox release and idempotent replay; nine unsafe cases held/blocked |
-| Real semantic prompts | 6/6 passed | `evals/live-semantic.json`; three benign and three behavioral override prompts through the actual local model |
-| Desktop/mobile browser flow | 8/8 passed, zero runtime errors | `evals/browser.json`; actual browser/API/model, rendered evidence, release, export, live policy/feed edits, mobile layout and self-hosted API reference |
-| Deployment and persistence | Passed | `evals/deployment.json`; exact public health SHA, pre-existing signed session and supplier records survive container recreation, real inference through a dedicated supervised private forward |
-| Hosted external-agent SDK | 7/7 passed | `evals/live-sdk.json`; actual bank-handle-only evidence/proposal, denied authority escalation and independent reviewer release |
+## Evidence files and scopes
 
-The hosted 16-case run had **zero false blocks among seven positive cases** and **zero unsafe allows among nine negative cases**. Recorded p95 end-to-end time was **27,473 ms** and includes upload/import, queue/OCR, guard/proposal inference and, where allowed, reviewer release/replay; it is not isolated gateway overhead. These are finite synthetic tests, not a general fraud-detection benchmark or production load test.
+| File | What it establishes |
+|---|---|
+| `evals/unit-tests.xml` | Local executable positive/negative controls, actual raster/OCR, labelled provider doubles, atomic obligation consumption/replay, authority drift, current file limits, accounting, final reporting and configuration semantics |
+| `evals/linux-unit-tests.xml` | Same committed suite in a restricted Linux runtime with isolated disposable state |
+| `evals/results.json`, `evals/linux-evidence.json` | Actual 21-PDF raster/OCR/text/EPC corpus, with no AI dispatch; hidden-text evidence expectations differ explicitly from full-workflow expectations |
+| `evals/live-pipeline.json` | Actual hosted isolated-worker/model/approval/sandbox-release pipeline for every declared case; per-case stage latency and exact source hash |
+| `evals/live-semantic.json` | Twenty stated prompts against the actual local model, ten benign and ten behavioral overrides, including Czech/Polish and indirect role instructions |
+| `evals/live-sdk.json` | Actual bank-handle evidence/proposal restrictions and independent reviewer release |
+| `evals/browser.json` | Real desktop/mobile browser/API/model flows, complete/current evaluation banner, exports, final reporting and live feed allow/block/allow; bound source/release hashes |
+| `evals/performance.json`, `evals/linux-performance.json` | Measured sequential deterministic gateway latency with catalog/privacy/permission/audit processing; no AI/OCR/network dispatch and no production-throughput claim |
+| `evals/deployment.json` | Actual public HTTPS/source release, model availability and retained signed session/data across project-container recreation |
 
-## Version and environment interpretation
+The 21-case manifest includes nine legitimate variants, eleven blocked cases and one review hold. The unreadable-document expectation is a block because mandatory purchase-order/amount authority is absent; it is not a semantic classification. New positives include a genuinely reordered layout and a benign raster/text-layer hybrid. The hidden-prose case holds for representation review, rather than being labelled a known injection.
 
-Reports retain the actual tested release SHA. The final application-content hash combines `renderguard`, `src`, `policies`, `signatures` and `fixtures`; it excludes documentation, package archives and CI templates. The hosted tested code and final source share this hash. The final deployment health is checked against the latest pushed Git commit after packaging; no older SHA is silently rewritten into a report.
+## Performance interpretation
 
-The Linux runtime image contains compiled frontend assets rather than TypeScript source, so its evidence evaluator hashes the runtime subset and produces a different `source_sha`. The Linux suite runs the same committed Python code and fixture corpus. The earlier `local-live-pipeline.json` records a pre-final local development run; prefer `live-pipeline.json` for the final hosted result.
+Deterministic gateway measurements include synchronous central-policy/feed reads, permission/privacy/signature checks and SQLite audit persistence. They exclude document rendering, model queue/inference and payment execution. Host/architecture and sampling scope are recorded. Separately labelled workspace stage percentiles cover gateway, evidence, document, semantic inference, proposal inference, queue and executor wherever measured. Full-workflow percentiles include queue/OCR/AI and allowed approval/release/replay; they must not be described as gate overhead.
 
-All effects are synthetic sandbox ledger receipts. No bank, submission portal or personal application is involved. The optional CI YAML is a template, not an active or claimed GitHub Actions run. Reproduction commands are in README; deployment/restart commands are in `docs/operations.md`.
+Finite synthetic results are not a universal attack-detection guarantee. Tests may reveal false positives or misses; these are reported, not replaced by a test double on the live path. Dispatched unknown usage stays pessimistic, while known no-dispatch cancellation refunds token/financial holds. The optional external adapter is exercised only with in-memory mocked HTTP responses, never billed real calls.
+
+## Provenance
+
+Runtime and evaluator share one digest over `renderguard`, `src`, `policies`, `signatures` and `fixtures`, excluding bytecode. Runtime includes frontend source solely for this proof. The dashboard compares actual current-source digest with the recorded result and checks every fixture ID; a stale/incomplete record is visibly labelled. Reports keep their actual tested release SHA. Documentation and immutable package commits can change Git HEAD without changing the tested application-content digest.
+
+Earlier development reports such as `local-live-pipeline.json` are historical; prefer revised `live-pipeline.json`. Original draft/final snapshots retain their earlier reports. Optional CI is a template, not an active GitHub Actions run. All effects are synthetic sandbox receipts, with no bank connection or competition submission.

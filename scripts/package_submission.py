@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import zipfile
@@ -19,8 +20,13 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", choices=["draft", "final"], required=True)
+    parser.add_argument(
+        "--name", help="Distinct immutable review snapshot name, e.g. revised-final-2026-10-03"
+    )
     args = parser.parse_args()
-    target = ROOT / "submission" / ("draft-2026-10-03" if args.stage == "draft" else "final")
+    if args.name and not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,60}", args.name):
+        raise SystemExit("Use a simple lowercase snapshot name")
+    target = ROOT / "submission" / (args.name or ("draft-2026-10-03" if args.stage == "draft" else "final"))
     if target.exists():
         raise SystemExit("The frozen package already exists; preserve it rather than replacing it.")
     sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -40,12 +46,27 @@ def main():
         "docs/operations.md",
         "docs/workflow-research.md",
         "docs/threat-model.md",
+        "docs/revision-review.md",
+        "docs/third-party-licenses.md",
     ):
         shutil.copy(ROOT / name, target / Path(name).name)
     shutil.copytree(ROOT / "evals", target / "verification")
+    shutil.copytree(ROOT / "docs/third-party", target / "third-party")
+    shutil.copytree(ROOT / "docs/reviews", target / "reviews")
     images = target / "screenshots"
     images.mkdir()
-    for name in ("release.png", "qr-swap.png", "register.png", "control-probe.png", "mobile-workbench.png"):
+    for name in (
+        "release.png",
+        "qr-swap.png",
+        "register.png",
+        "control-probe.png",
+        "mobile-workbench.png",
+        "controls.png",
+        "release-detail.png",
+        "qr-detail.png",
+        "model-input.png",
+        "audit-detail.png",
+    ):
         if (ROOT / "output/playwright" / name).exists():
             shutil.copy(ROOT / "output/playwright" / name, images / name)
     paths = subprocess.check_output(
@@ -53,7 +74,7 @@ def main():
     ).splitlines()
     with zipfile.ZipFile(target / "source.zip", "w", zipfile.ZIP_DEFLATED) as z:
         for path in paths:
-            if path.startswith(("submission/draft-", "submission/final", "output/")):
+            if path.startswith(("submission/draft-", "submission/final", "submission/revised-", "output/")):
                 continue
             content = subprocess.check_output(["git", "show", sha + ":" + path], cwd=ROOT)
             z.writestr("RenderGuard/" + path, content)
@@ -67,6 +88,7 @@ def main():
     manifest = {
         "project": "RenderGuard",
         "stage": args.stage,
+        "snapshot_name": target.name,
         "created_at": datetime.now().astimezone().isoformat(),
         "source_commit": sha,
         "slides": 10,

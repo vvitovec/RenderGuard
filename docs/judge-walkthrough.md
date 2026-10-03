@@ -16,9 +16,10 @@
 
 - Approve a clean invoice, edit the policy as Administrator, return to Reviewer and attempt release: stale approval is rejected. Re-prepare under the changed configuration.
 - Use the SDK to propose a different amount/recipient: action grounding blocks it. SDK proposals also run semantic controls.
-- Remove all literal signatures, then probe an unsafe non-HTTPS authorization endpoint: the independent endpoint permission still blocks it.
+- In Test lab use the feed canary: an otherwise permitted read_evidence probe allows; adding a literal tool signature blocks; removing it allows again. Export the responsible feed version. An unsafe non-HTTPS endpoint remains blocked by independent permissions even with an empty feed.
 - Set `max_model_calls` to zero and prepare: provider dispatch is denied. Explicit positive/negative cost reservation tests use configured rates, not real charges.
 - Set `profile: observe` to explore skipped controls; observe mode cannot approve/release.
+- Give a differently numbered invoice the same approved obligation: it cannot create a second receipt. This is one full release per obligation, not partial-invoice reconciliation.
 - Retry execution concurrently with the same capability: same receipt, one persisted effect. The automated suite runs eight parallel attempts.
 - Inspect audit export: no approval token, model credential or supported private-data patterns leak through the reporting surface.
 
@@ -29,3 +30,9 @@ The UI indicates it and preparation is held. Show a deterministic representation
 ## Differentiation and honest claims
 
 Supplier-account validation is prior art. The useful differentiator is a single evidence-bound authorization chain: pixels/text/QR, independent supplier/PO, minimized AI proposal, exact human approval, and protected one-effect execution. Claims concern implemented boundaries and the recorded finite corpus, not universal fraud prevention.
+
+## Explaining the control layer quickly
+
+Payments are the specialized adapter. The reusable gateway intercepts model requests/responses, registered tools and resource discovery under one validated policy/feed, with capability-derived identity, privacy, reservations and reporting. The guarded effect is independent of model confidence. Use the architecture diagram to show which process holds each authority.
+
+Show deterministic gateway p95 separately from OCR, queue and inference latency. These are actual scoped measurements, not claimed production throughput. Read the release register as unique current invoice outcomes; raw stage events have a separate count. Budget remaining is visible, and a new synthetic workspace starts with fresh capped resources.

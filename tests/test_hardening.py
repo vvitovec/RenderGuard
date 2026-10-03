@@ -188,15 +188,16 @@ def test_stale_authority_is_visible_before_reviewer_clicks(env):
     assert env[1].get("/api/documents/" + doc["id"]).json()["proposal"]["stale"]
 
 
-def test_semantic_pdf_fields_agree_before_guard_intervention(env):
+def test_explicit_pdf_overrides_are_held_before_model_dispatch(env):
     for case in ("hidden-instruction", "visible-instruction"):
         doc = import_case(env, case)
-        assert doc["evidence_decision"]["verdict"] == "allow"
+        assert doc["evidence_decision"]["verdict"] in ("allow", "review")
         assert "execute_payment" in doc["data"]["machine_text"]
         env[2].injection = True
         p = env[1].post("/api/documents/" + doc["id"] + "/prepare").json()
         assert p["decision"]["verdict"] == "block"
-        assert p["agent"]["mode"] == "held_by_semantic_guard"
+        assert p["agent"]["mode"] == "held_before_model"
+        assert env[2].calls == 0
 
 
 def test_sdk_agent_only_receives_handles_and_cannot_read_full_master(env):

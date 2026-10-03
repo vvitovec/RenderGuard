@@ -4,13 +4,16 @@ import hashlib
 import json
 import re
 import sqlite3
+import time
+from collections import Counter
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from .documents import valid_iban
-from .gateway import Denied, Gateway, Principal, check, decision
+from .gateway import Denied, Gateway, Principal, check, compact_checks, decision
 from .privacy import redact_text
 from .store import Store, canonical, digest, now, uid
 
@@ -144,6 +147,11 @@ class Payments:
         return self.document(workspace, document_id)
 
     def evidence_checks(self, workspace: str, doc: dict) -> dict:
+        started = time.monotonic()
+        result = self._evidence_checks(workspace, doc)
+        return {**result, "evidence_ms": round((time.monotonic() - started) * 1000, 3)}
+
+    def _evidence_checks(self, workspace: str, doc: dict) -> dict:
         policy, version = self.gateway.catalog.get(workspace)
         checks = []
         if doc["status"] != "ready":
@@ -159,6 +167,22 @@ class Payments:
                 version,
             )
         evidence = doc["data"]
+        source = self.documents / doc["id"] / "input.pdf"
+        try:
+            source_bytes = source.stat().st_size if source.is_file() else None
+        except OSError:
+            source_bytes = None
+        checks.append(check(
+            "document_limits", "Current document limits",
+            "pass" if source_bytes is not None and source_bytes <= policy.document.max_bytes
+            and len(evidence.get("pages", [])) <= policy.document.max_pages else "review",
+            "Source and rendered page count satisfy the active document policy."
+            if source_bytes is not None and source_bytes <= policy.document.max_bytes
+            and len(evidence.get("pages", [])) <= policy.document.max_pages
+            else "Source is missing or exceeds the active file/page limit; re-import compliant evidence.",
+            source_bytes=source_bytes, max_bytes=policy.document.max_bytes,
+            pages=len(evidence.get("pages", [])), max_pages=policy.document.max_pages,
+        ))
         visible, machine = evidence["visible"], evidence["machine"]
         supplier = self.supplier(workspace, doc["supplier_id"])
         obligation = self.obligation(workspace, doc["obligation_id"])
@@ -241,6 +265,49 @@ class Payments:
                         else "No corresponding machine-text field; rendered OCR remains the evidence source.",
                     )
                 )
+            visible_tokens = set(re.findall(r"[\w]+", evidence["visible_text"].casefold()))
+            similar = {}
+            # Bounded lexical heuristic, never an unbounded pairwise comparison.
+            # Large text layers are held before reaching the model context boundary.
+            comparison_bounded = len(evidence["machine_text"]) + len(evidence["visible_text"]) <= 100000
+            buckets = {}
+            for token in sorted(visible_tokens):
+                if 4 <= len(token) <= 64:
+                    bucket = buckets.setdefault((token[0], len(token)), [])
+                    if len(bucket) < 32:
+                        bucket.append(token)
+
+            def present(token):
+                if token in visible_tokens:
+                    return True
+                if token not in similar:
+                    candidates = [other for length in range(max(4, len(token) - 2), len(token) + 3)
+                                  for other in buckets.get((token[0], length), [])][:32] if 4 <= len(token) <= 64 else []
+                    similar[token] = any(
+                        SequenceMatcher(None, token, other).ratio() >= 0.8 for other in candidates
+                    )
+                return similar[token]
+
+            hidden_lines = 0
+            for line in evidence["machine_text"].splitlines() if comparison_bounded else []:
+                tokens = re.findall(r"[\w]+", line.casefold())
+                if len(tokens) < policy.controls.hidden_text_min_tokens:
+                    continue
+                missing = sum(not present(token) for token in tokens)
+                if missing / len(tokens) >= policy.controls.hidden_text_missing_ratio:
+                    hidden_lines += 1
+            checks.append(check(
+                "hidden_text", "Unseen machine-text prose",
+                "review" if not comparison_bounded else policy.controls.hidden_text_action if hidden_lines else "pass",
+                "Document text exceeds the bounded discrepancy comparison; use a readable, smaller source."
+                if not comparison_bounded else
+                "Substantial machine-text prose is mostly absent from visible OCR; inspect the source."
+                if hidden_lines else "No substantial machine-text line is mostly absent from visible OCR.",
+                unmatched_lines=hidden_lines,
+                missing_ratio=policy.controls.hidden_text_missing_ratio,
+                minimum_tokens=policy.controls.hidden_text_min_tokens,
+                comparison_bounded=comparison_bounded,
+            ))
         else:
             checks.append(
                 check(
@@ -361,26 +428,58 @@ class Payments:
                 else "No prior sandbox release for this invoice identity.",
             )
         )
+        consumed = self.store.one(
+            "SELECT status FROM obligation_consumption WHERE workspace=? AND obligation IN (?, '*') LIMIT 1",
+            (workspace, obligation["id"]),
+        )
+        checks.append(check(
+            "obligation_consumed", "One release per approved obligation",
+            "block" if consumed else "pass",
+            "This approved obligation is already consumed or historical consumption is ambiguous."
+            if consumed else "This full-payment obligation has no previous sandbox release.",
+        ))
         return decision(checks, version, supplier=supplier, obligation=obligation)
 
-    def binding(self, workspace, doc, payment):
-        _, version = self.gateway.catalog.get(workspace)
+    def binding(self, workspace, doc, payment, authority=None):
+        authority = authority or self.gateway.catalog.authority(workspace)
         supplier = self.supplier(workspace, doc["supplier_id"])
         obligation = self.obligation(workspace, doc["obligation_id"])
-        try:
-            feed_hash = digest(self.gateway.catalog.feed(workspace))
-        except (ValueError, OSError):
-            feed_hash = "unavailable"
         return {
             "document_hash": doc["sha"],
             "evidence_hash": digest(doc["data"]),
-            "policy_version": version,
+            **authority,
             "supplier_hash": digest(supplier),
             "obligation_hash": digest(obligation),
             "payment_hash": digest(payment),
-            "signature_hash": feed_hash,
             "workspace": workspace,
         }
+
+    def handles(self, doc) -> dict[str, str]:
+        evidence = doc["data"]
+        accounts = list(dict.fromkeys(evidence["visible"]["ibans"] + evidence["machine"]["ibans"]))
+        return {account: f"account_{index + 1}" for index, account in enumerate(accounts)}
+
+    def representations(self, workspace, doc) -> dict:
+        handles = self.handles(doc)
+        texts, redactions = {}, []
+        for key, label in (("visible_text", "visible_ocr"), ("machine_text", "machine_text")):
+            text, kinds = redact_text(doc["data"].get(key, ""), handles)
+            texts[label] = text
+            redactions.extend(kinds)
+        self.store.event(workspace, "evidence.minimized", "allow", "privacy",
+                         {"document_id": doc["id"], "redaction_counts": dict(Counter(redactions))})
+        return texts
+
+    def document_text_gate(self, principal, doc) -> dict:
+        return self.gateway.evaluate(principal, "document.text", {
+            "text": "\n".join((doc["data"].get("visible_text", ""), doc["data"].get("machine_text", "")))
+        })
+
+    def authority_check(self, workspace, authority) -> dict | None:
+        if self.gateway.catalog.authority(workspace) != authority:
+            return check("authority_changed", "Configuration authority", "review",
+                         "Policy or signature catalog changed during preparation; prepare again.")
+        return None
 
     def candidate(self, doc):
         visible = doc["data"].get("visible", {})
@@ -412,7 +511,7 @@ class Payments:
                     "Proposal is not a supported exact EUR payment action.",
                 )
             )
-            return decision(checks, result["policy_version"])
+            return decision(checks, result["policy_version"], evidence_ms=result["evidence_ms"])
         mismatch = [key for key in candidate if candidate[key] != parsed[key]]
         checks.append(
             check(
@@ -424,11 +523,15 @@ class Payments:
                 else "Proposed action agrees with the visible fields and selected supplier/obligation.",
             )
         )
-        return decision(checks, result["policy_version"])
+        return decision(checks, result["policy_version"], evidence_ms=result["evidence_ms"])
 
-    def save_proposal(self, workspace, doc, payment, result, agent):
+    def save_proposal(self, workspace, doc, payment, result, agent, authority=None):
         proposal_id = uid()
-        binding = self.binding(workspace, doc, payment)
+        authority = authority or self.gateway.catalog.authority(workspace)
+        changed = self.authority_check(workspace, authority)
+        if changed:
+            result = decision(result["checks"] + [changed], authority["policy_version"], evidence_ms=result.get("evidence_ms"))
+        binding = self.binding(workspace, doc, payment, authority)
         status = (
             "awaiting_approval"
             if result["verdict"] == "allow"
@@ -461,6 +564,9 @@ class Payments:
                 "payment": payment,
                 "binding": binding,
                 "summary": result["summary"],
+                "amount_minor": payment.get("amount_minor", 0),
+                "checks": compact_checks(result["checks"]),
+                "evidence_ms": result.get("evidence_ms"),
             },
         )
         return self.proposal(workspace, proposal_id)
@@ -486,8 +592,13 @@ class Payments:
         return row
 
     async def prepare(self, principal, document_id):
+        authority = self.gateway.catalog.authority(principal.workspace)
         doc = self.consume_worker_result(principal.workspace, document_id)
         result = self.evidence_checks(principal.workspace, doc)
+        evidence_ms = result["evidence_ms"]
+        if doc["status"] == "ready":
+            text_gate = self.document_text_gate(principal, doc)
+            result = decision(result["checks"] + text_gate["checks"], result["policy_version"], evidence_ms=evidence_ms)
         candidate = (
             self.candidate(doc)
             if doc["status"] == "ready"
@@ -510,17 +621,16 @@ class Payments:
                     "mode": "held_before_model",
                     "reason": "Independent evidence controls prevented model dispatch; displayed candidate is OCR-derived.",
                 },
+                authority,
             )
-        evidence = doc["data"]
-        accounts = list(dict.fromkeys(evidence["visible"]["ibans"] + evidence["machine"]["ibans"]))
-        handles = {account: f"account_{index + 1}" for index, account in enumerate(accounts)}
-        minimized, _ = redact_text(evidence["machine_text"] or evidence["visible_text"], handles)
+        handles = self.handles(doc)
+        minimized = self.representations(principal.workspace, doc)
         semantic = await self.gateway.semantic(principal, minimized)
         checks = result["checks"] + [semantic]
-        result = decision(checks, result["policy_version"])
+        result = decision(checks, result["policy_version"], evidence_ms=evidence_ms)
         if result["verdict"] != "allow":
             return self.save_proposal(
-                principal.workspace, doc, candidate, result, {"mode": "held_by_semantic_guard"}
+                principal.workspace, doc, candidate, result, {"mode": "held_by_semantic_guard"}, authority
             )
         agent_principal = Principal(principal.workspace, "agent", "invoice-assistant")
         try:
@@ -572,7 +682,7 @@ class Payments:
             gate = self.gateway.evaluate(agent_principal, "tool.call", {"tool": "propose_payment"})
             checks.extend(gate["checks"])
             checks.extend(self.proposal_checks(principal.workspace, doc, payment)["checks"][-1:])
-            if self.gateway.catalog.get(principal.workspace)[1] != result["policy_version"]:
+            if self.authority_check(principal.workspace, authority):
                 checks.append(
                     check(
                         "policy_changed",
@@ -581,7 +691,7 @@ class Payments:
                         "Policy changed during preparation; prepare again.",
                     )
                 )
-            result = decision(checks, result["policy_version"])
+            result = decision(checks, result["policy_version"], evidence_ms=evidence_ms)
             agent = {
                 "mode": "live_local_model",
                 "reason": proposed.reason,
@@ -597,19 +707,22 @@ class Payments:
                     getattr(exc, "reason", "Agent returned an unsupported structured proposal; action held."),
                 )
             )
-            result = decision(checks, self.gateway.catalog.get(principal.workspace)[1])
+            result = decision(checks, authority["policy_version"], evidence_ms=evidence_ms)
             payment, agent = candidate, {"mode": "held_by_gateway"}
-        return self.save_proposal(principal.workspace, doc, payment, result, agent)
+        return self.save_proposal(principal.workspace, doc, payment, result, agent, authority)
 
     async def propose(self, principal: Principal, document_id: str, payment: dict):
+        authority = self.gateway.catalog.authority(principal.workspace)
         gate = self.gateway.evaluate(principal, "tool.call", {"tool": "propose_payment"})
         doc = self.consume_worker_result(principal.workspace, document_id)
         result = self.proposal_checks(principal.workspace, doc, payment)
         checks = gate["checks"] + result["checks"]
+        if doc["status"] == "ready":
+            checks += self.document_text_gate(principal, doc)["checks"]
         if decision(checks, result["policy_version"])["verdict"] == "allow":
-            minimized, _ = redact_text(doc["data"]["machine_text"] or doc["data"]["visible_text"])
+            minimized = self.representations(principal.workspace, doc)
             checks.append(await self.gateway.semantic(principal, minimized))
-        if self.gateway.catalog.get(principal.workspace)[1] != result["policy_version"]:
+        if self.authority_check(principal.workspace, authority):
             checks.append(
                 check(
                     "policy_changed",
@@ -618,9 +731,9 @@ class Payments:
                     "Policy changed during proposal validation; prepare again.",
                 )
             )
-        result = decision(checks, result["policy_version"])
+        result = decision(checks, result["policy_version"], evidence_ms=result["evidence_ms"])
         return self.save_proposal(
-            principal.workspace, doc, payment, result, {"mode": "sdk_proposal", "role": principal.role}
+            principal.workspace, doc, payment, result, {"mode": "sdk_proposal", "role": principal.role}, authority
         )
 
     def verify_files(self, doc):
@@ -711,6 +824,7 @@ class Payments:
                 "approval_id": approval_id,
                 "policy_version": version,
                 "expires": expiry,
+                "approver": principal.subject,
             },
         )
         return {
@@ -720,6 +834,7 @@ class Payments:
         }
 
     def execute(self, principal, proposal_id, token):
+        started = time.monotonic()
         if principal.role != "reviewer":
             raise Denied("execution_role", "The reviewer capability is required to release a sandbox payment")
         try:
@@ -780,17 +895,22 @@ class Payments:
                 "mode": "sandbox",
                 "bank_connected": False,
                 "binding": proposal["binding"],
-                "approver": principal.subject,
+                "approver": approval["approver"],
+                "executor": principal.subject,
                 "idempotent_replay": False,
             }
             try:
+                db.execute(
+                    "INSERT INTO obligation_consumption VALUES(?,?,?,?)",
+                    (principal.workspace, payment["obligation_id"], receipt_id, "released"),
+                )
                 db.execute(
                     "INSERT INTO receipts VALUES(?,?,?,?,?,?)",
                     (receipt_id, principal.workspace, proposal_id, key, now(), canonical(receipt_data)),
                 )
             except sqlite3.IntegrityError as exc:
                 raise Denied(
-                    "duplicate_invoice", "This invoice identity already has a release receipt"
+                    "duplicate_obligation", "This invoice or approved obligation already has a release receipt"
                 ) from exc
             db.execute("UPDATE approvals SET consumed=? WHERE id=?", (now(), approval["id"]))
             db.execute("UPDATE proposals SET status='released' WHERE id=?", (proposal_id,))
@@ -809,6 +929,10 @@ class Payments:
                             "receipt_id": receipt_id,
                             "payment_hash": digest(payment),
                             "mode": "sandbox",
+                            "amount_minor": payment["amount_minor"],
+                            "approver": approval["approver"],
+                            "executor": principal.subject,
+                            "executor_ms": round((time.monotonic() - started) * 1000, 3),
                         }
                     ),
                 ),

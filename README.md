@@ -71,11 +71,12 @@ uv run python -m scripts.evaluate
 uv run python -m scripts.evaluate --url https://renderguard.vvitovec.com
 uv run python -m scripts.live_model_check --url https://renderguard.vvitovec.com
 uv run python -m scripts.live_sdk_check --url https://renderguard.vvitovec.com
+uv run python -m scripts.performance
 # Isolated headless browser against our own app:
 BASE_URL=https://renderguard.vvitovec.com npm run test:e2e
 ```
 
-The unit suite uses actual PDFium rendering, Tesseract OCR and QR decoding, with a **clearly named deterministic provider double** for accounting/permissions/failure-path checks. The live evaluator uses the actual Qwen model and no substitute. Results identify their scope and source-content hash. The 16-case full-workflow corpus contains seven permitted variants and nine blocked cases; it is not a general fraud benchmark. Two injection PDFs deliberately have consistent payment fields: the evidence-only evaluator expects agreement, while the real semantic guard must block the full workflow. Both expectations are recorded explicitly in the manifest.
+The unit suite uses actual PDFium rendering, Tesseract OCR and QR decoding, with a **clearly named deterministic provider double** for accounting/permissions/failure-path checks. The live evaluator uses the actual Qwen model and no substitute. Results identify their scope and source-content hash. The 21-case full-workflow corpus contains nine permitted variants, eleven blocked cases and one evidence hold; it is not a general fraud benchmark. Injection PDFs deliberately have consistent payment fields: hidden-text, literal document rules and the semantic guard cover separate boundaries. A hybrid raster/text-layer attack checks that both representations are inspected. Both expectations are recorded explicitly in the manifest.
 
 ## Architecture and trust boundary
 
@@ -95,7 +96,7 @@ flowchart LR
     X --> Q
 ```
 
-The PDF worker sees only the document queue, not the database, signing key or model service. The assistant never gets the reviewer capability or approval token. Configuration uses validated data; literal signatures are never evaluated as code. Model calls reserve tokens, estimated charges, call counts and concurrency **before** dispatch. Unknown interrupted usage is charged pessimistically. Accounting uses the rates frozen at dispatch.
+The PDF worker sees only the document queue, not the database, signing key or model service. The assistant never gets the reviewer capability or approval token. Configuration uses validated data; literal signatures are never evaluated as code. Model calls reserve tokens, estimated charges, call counts and concurrency **before** dispatch. Unknown interrupted dispatched usage is charged pessimistically. Known no-dispatch cancellation refunds token/financial holds while retaining the attempted-call counter. Accounting uses the rates frozen at dispatch.
 
 See [architecture](docs/architecture.md), [judge walkthrough](docs/judge-walkthrough.md), [criteria mapping](docs/criteria-matrix.md), [workflow research](docs/workflow-research.md), and [deployment operations](docs/operations.md).
 
@@ -134,3 +135,5 @@ docs/           Research, threat boundaries, rubric mapping, demo and operating 
 ```
 
 Final recorded counts and environment interpretation: [verification](docs/verification.md). Prepared packages are for team review only; nothing is submitted automatically.
+
+Review-driven fixes and exact boundaries: [critique/revision record](docs/revision-review.md). Dependency/model attribution and original notices: [third-party inventory](docs/third-party-licenses.md). The actual 3B model uses the Qwen Research License; the prototype is for evaluation, and commercial deployment needs a suitable licensed model.

@@ -5,6 +5,8 @@ RUN npm ci
 COPY src ./src
 COPY index.html tsconfig.json vite.config.ts ./
 COPY scripts/copy-swagger.mjs ./scripts/copy-swagger.mjs
+COPY docs/third-party ./docs/third-party
+COPY docs/third-party-licenses.md ./docs/third-party-licenses.md
 RUN npm run build
 
 FROM python:3.12-slim-bookworm AS runtime
@@ -15,6 +17,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.10.0 /uv /usr/local/bin/uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY renderguard ./renderguard
+COPY src ./src
 COPY policies ./policies
 COPY signatures ./signatures
 COPY fixtures ./fixtures

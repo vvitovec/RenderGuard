@@ -241,6 +241,7 @@ def process_pdf(folder: Path, max_pages: int = 5) -> dict:
     pdf.close()
     return {
         "source_hash": source_hash,
+        "source_bytes": source.stat().st_size,
         "pages": pages,
         "visible": fields("\n".join(visible)),
         "machine": fields("\n".join(raw)),

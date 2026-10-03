@@ -1,6 +1,6 @@
 # Scope and limitations
 
-Supported use case: independently approved repeat supplier, approved EUR obligation, labelled invoice number / PO / total / IBAN, supported IBAN-country lengths, up to five PDF pages, optional EPC SCT QR. Positive cases include no QR, spaced IBAN, scanned pages and a matching OCR text layer.
+Supported use case: independently approved repeat supplier, approved EUR obligation, labelled invoice number / PO / total / IBAN, one full release per approved obligation (partial invoices are unsupported), supported IBAN-country lengths, up to five PDF pages, optional EPC SCT QR. Positive cases include no QR, spaced IBAN, scanned pages and a matching OCR text layer.
 
 The prototype does not prove invoice authenticity, bank-account ownership, contractual delivery or supplier legal identity. It does not reconcile tax/accounting, support arbitrary national payment QR formats, provide a real SEPA bank integration or guarantee complete prompt-injection detection. Confidence and ambiguity cause holds rather than silent OCR correction. A generated receipt is a sandbox ledger effect only.
 
@@ -15,3 +15,7 @@ The current single-process API, one-worker queue, SQLite WAL and one model slot 
 Historical examples are safe inspections of endpoint/artifact metadata. The project never executes an RCE payload, opens a supplied MCP endpoint, deserializes pickle, or downloads an arbitrary model.
 
 External model adapter code is supplied for architecture extensibility but is not selected by the hosted demo or claimed as live-tested. The name RenderGuard is a hackathon working title; we do not claim trademark exclusivity or a globally first-ever invoice security product.
+
+Budgets are persistent per-workspace lifetime/session caps, with no rolling financial reset. The dashboard exposes remaining and reserved limits. Hidden-text comparison is a configurable token-overlap heuristic that may hold unusual legitimate layouts; neither text overlap nor semantic risk proves authenticity. Balanced profile adds a semantic review band; explicitly disabled controls are disclosed and never remove mandatory execution identity/approval boundaries.
+
+The local Qwen2.5:3b weights use the Qwen Research License; this deployment is an evaluation prototype. See the preserved model/runtime attribution before selecting a commercial production model.

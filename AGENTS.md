@@ -20,3 +20,6 @@ Build a specialised release gate for AI-prepared repeat-supplier SEPA payments. 
 
 ## Completion
 Preserve an immutable first-draft Git tag and submission package, then continue final work. Run the meaningful control suite, document/OCR integration tests, headless end-to-end flows, real local-model checks, and verify the live service. Commit/push current branch. Submission PDF has at most 10 slides and all materials are English. Save ready-to-upload packages; Viktor handles HackTribe/Discord/Drive. Do not submit any entry before Viktor reviews it. Team: Blue Bands Collectors; Viktor Vitovec, Jan Sebastian Rosicky, Krystof Bigas.
+
+## Revised review snapshots
+Preserve both `submission/draft-2026-10-03` and `submission/final` unchanged. Critique-driven revised packages use a distinct name such as `submission/revised-final-2026-10-03`; all remain prepared for review, never automatically submitted. Current policy is a durable per-workspace cap, not a rolling hourly budget. Model attribution is retained at Mac mini runtime `models/notices/qwen2.5-3b` and `docs/third-party`; the actual weights use the Qwen Research License. Original notices are also shipped at `/third-party-licenses.txt` and `/licenses/` assets.
