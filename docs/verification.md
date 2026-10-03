@@ -10,6 +10,7 @@ Recorded on 3 October 2026 against the actual hosted RenderGuard gateway, isolat
 | Full hosted workflow | 16/16 passed | `evals/live-pipeline.json`; seven legitimate variants completed real-model preparation, human review, sandbox release and idempotent replay; nine unsafe cases held/blocked |
 | Real semantic prompts | 6/6 passed | `evals/live-semantic.json`; three benign and three behavioral override prompts through the actual local model |
 | Desktop/mobile browser flow | 8/8 passed, zero runtime errors | `evals/browser.json`; actual browser/API/model, rendered evidence, release, export, live policy/feed edits, mobile layout and self-hosted API reference |
+| Deployment and persistence | Passed | `evals/deployment.json`; exact public health SHA, pre-existing signed session and supplier records survive container recreation, real inference through a dedicated supervised private forward |
 | Hosted external-agent SDK | 7/7 passed | `evals/live-sdk.json`; actual bank-handle-only evidence/proposal, denied authority escalation and independent reviewer release |
 
 The hosted 16-case run had **zero false blocks among seven positive cases** and **zero unsafe allows among nine negative cases**. Recorded p95 end-to-end time was **27,473 ms** and includes upload/import, queue/OCR, guard/proposal inference and, where allowed, reviewer release/replay; it is not isolated gateway overhead. These are finite synthetic tests, not a general fraud-detection benchmark or production load test.
