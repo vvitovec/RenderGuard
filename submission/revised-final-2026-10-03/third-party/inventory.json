@@ -1,0 +1,349 @@
+[
+  {
+    "ecosystem": "npm",
+    "name": "@fontsource/literata",
+    "version": "5.3.0",
+    "license_metadata": "OFL-1.1",
+    "notices": [
+      "docs/third-party/notices/npm/@fontsource/literata/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@fontsource/public-sans",
+    "version": "5.3.0",
+    "license_metadata": "OFL-1.1",
+    "notices": [
+      "docs/third-party/notices/npm/@fontsource/public-sans/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@scarf/scarf",
+    "version": "1.4.0",
+    "license_metadata": "Apache-2.0",
+    "notices": [
+      "docs/third-party/notices/npm/@scarf/scarf/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "lucide-react",
+    "version": "0.577.0",
+    "license_metadata": "ISC",
+    "notices": [
+      "docs/third-party/notices/npm/lucide-react/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "react",
+    "version": "19.3.0",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/npm/react/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "react-dom",
+    "version": "19.3.0",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/npm/react-dom/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "scheduler",
+    "version": "0.28.0",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/npm/scheduler/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "swagger-ui-dist",
+    "version": "5.33.1",
+    "license_metadata": "Apache-2.0",
+    "notices": [
+      "docs/third-party/notices/npm/swagger-ui-dist/LICENSE",
+      "docs/third-party/notices/npm/swagger-ui-dist/NOTICE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "annotated-doc",
+    "version": "0.0.5",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/annotated-doc/annotated_doc-0.0.5.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "annotated-types",
+    "version": "0.8.0",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/annotated-types/annotated_types-0.8.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "anyio",
+    "version": "4.15.1",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/anyio/anyio-4.15.1.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "certifi",
+    "version": "2026.7.22",
+    "license_metadata": "MPL-2.0",
+    "notices": [
+      "docs/third-party/notices/certifi/certifi-2026.7.22.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "charset-normalizer",
+    "version": "3.5.2",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/charset-normalizer/charset_normalizer-3.5.2.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "click",
+    "version": "8.5.0",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/click/click-8.5.0.dist-info/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "fastapi",
+    "version": "0.142.2",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/fastapi/fastapi-0.142.2.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "h11",
+    "version": "0.16.0",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/h11/h11-0.16.0.dist-info/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "httpcore",
+    "version": "1.0.9",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/httpcore/httpcore-1.0.9.dist-info/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "httpx",
+    "version": "0.28.1",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/httpx/httpx-0.28.1.dist-info/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "idna",
+    "version": "3.20",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/idna/idna-3.20.dist-info/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "opentelemetry-api",
+    "version": "1.45.0",
+    "license_metadata": "Apache-2.0",
+    "notices": [
+      "docs/third-party/notices/opentelemetry-api/opentelemetry_api-1.45.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "packaging",
+    "version": "26.3",
+    "license_metadata": "Apache-2.0 OR BSD-2-Clause",
+    "notices": [
+      "docs/third-party/notices/packaging/packaging-26.3.dist-info/licenses/LICENSE",
+      "docs/third-party/notices/packaging/packaging-26.3.dist-info/licenses/LICENSE.APACHE",
+      "docs/third-party/notices/packaging/packaging-26.3.dist-info/licenses/LICENSE.BSD",
+      "docs/third-party/notices/packaging/packaging/licenses/__init__.py",
+      "docs/third-party/notices/packaging/packaging/licenses/_spdx.py"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pillow",
+    "version": "12.3.0",
+    "license_metadata": "MIT-CMU",
+    "notices": [
+      "docs/third-party/notices/pillow/pillow-12.3.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pydantic",
+    "version": "2.13.5",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/pydantic/pydantic-2.13.5.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pydantic_core",
+    "version": "2.46.5",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/pydantic_core/pydantic_core-2.46.5.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pypdf",
+    "version": "6.19.0",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/pypdf/pypdf-6.19.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pypdfium2",
+    "version": "5.13.0",
+    "license_metadata": "BSD-3-Clause, Apache-2.0, dependency licenses",
+    "notices": [
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/LICENSES/Apache-2.0.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/LICENSES/BSD-3-Clause.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/LICENSES/CC-BY-4.0.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/abseil.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/agg23.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/fast_float.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/freetype.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/icu.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/lcms.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/libjpeg_turbo.ijg",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/libjpeg_turbo.md",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/libopenjpeg.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/libpng.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/libtiff.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/llvm-libc.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/pdfium-binaries.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/pdfium.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/simdutf.txt",
+      "docs/third-party/notices/pypdfium2/pypdfium2-5.13.0.dist-info/licenses/data/darwin_arm64/BUILD_LICENSES/zlib.txt"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "pytesseract",
+    "version": "0.3.13",
+    "license_metadata": "Apache License 2.0",
+    "notices": [
+      "docs/third-party/notices/pytesseract/pytesseract-0.3.13.dist-info/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "python-multipart",
+    "version": "0.0.32",
+    "license_metadata": "Apache-2.0",
+    "notices": [
+      "docs/third-party/notices/python-multipart/python_multipart-0.0.32.dist-info/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "PyYAML",
+    "version": "6.0.3",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/PyYAML/pyyaml-6.0.3.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "qrcode",
+    "version": "8.2",
+    "license_metadata": "BSD",
+    "notices": [
+      "docs/third-party/notices/qrcode/qrcode-8.2.dist-info/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "reportlab",
+    "version": "4.5.1",
+    "license_metadata": "BSD license (see license.txt for details), Copyright (c) 2000-2025, ReportLab Inc.",
+    "notices": [
+      "docs/third-party/notices/reportlab/reportlab-4.5.1.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "starlette",
+    "version": "1.7.0",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/starlette/starlette-1.7.0.dist-info/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "typing-inspection",
+    "version": "0.4.4",
+    "license_metadata": "MIT",
+    "notices": [
+      "docs/third-party/notices/typing-inspection/typing_inspection-0.4.4.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "typing_extensions",
+    "version": "4.16.0",
+    "license_metadata": "PSF-2.0",
+    "notices": [
+      "docs/third-party/notices/typing_extensions/typing_extensions-4.16.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "uvicorn",
+    "version": "0.54.0",
+    "license_metadata": "BSD-3-Clause",
+    "notices": [
+      "docs/third-party/notices/uvicorn/uvicorn-0.54.0.dist-info/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "ecosystem": "python",
+    "name": "zxing-cpp",
+    "version": "3.1.1",
+    "license_metadata": "Apache-2.0",
+    "notices": [
+      "docs/third-party/notices/zxing-cpp/zxing_cpp-3.1.1.dist-info/licenses/LICENSE"
+    ]
+  }
+]
