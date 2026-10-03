@@ -1,0 +1,7 @@
+{
+  "version": "2026-10-03.1",
+  "entries": [
+    {"id":"MCP-UNSAFE-AUTH-ENDPOINT","kind":"mcp.discovery","field":"authorization_endpoint","forbidden_prefixes":["file:","javascript:","data:"],"reference":"https://research.jfrog.com/vulnerabilities/mcp-remote-command-injection-rce-jfsa-2025-001290844/","description":"Reject executable/non-HTTPS discovery endpoints; historical attack class CVE-2025-6514. No endpoint is opened."},
+    {"id":"MODEL-UNSAFE-DESERIALIZATION","kind":"model.load","field":"format","forbidden_values":["pickle","pkl","python"],"reference":"https://huggingface.co/docs/hub/security-pickle","description":"Reject untrusted executable model formats. This gateway never loads arbitrary model artifacts."}
+  ]
+}

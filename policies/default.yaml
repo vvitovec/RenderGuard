@@ -1,0 +1,31 @@
+name: Repeat-supplier SEPA release
+profile: strict
+allowed_models: [qwen2.5:3b]
+allowed_tools: [propose_payment, read_evidence]
+allowed_hosts: [approved-mcp.example]
+controls:
+  semantic: true
+  semantic_threshold: 0.75
+  pii_action: redact
+  signatures: true
+  require_approval: true
+  evidence_consistency: true
+budgets:
+  max_model_calls: 8
+  max_tool_calls: 12
+  max_input_bytes: 24000
+  max_output_tokens: 700
+  max_tokens: 80000
+  max_cost_microusd: 1000000
+  timeout_seconds: 45
+  max_concurrent: 1
+document:
+  max_bytes: 8388608
+  max_pages: 5
+  ocr_min_confidence: 55
+  currency: EUR
+payment:
+  max_amount_minor: 500000
+  approval_ttl_seconds: 900
+rates:
+  qwen2.5:3b: {input_microusd_per_token: 0, output_microusd_per_token: 0}

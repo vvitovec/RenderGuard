@@ -1,0 +1,67 @@
+name: renderguard
+services:
+  gateway:
+    build: .
+    image: renderguard:${RELEASE_SHA:-local}
+    container_name: renderguard-gateway
+    restart: unless-stopped
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 128
+    environment:
+      OLLAMA_URL: http://127.0.0.1:11444
+      AUTH_MODE: demo
+      COOKIE_SECURE: 'true'
+      PUBLIC_ORIGIN: https://renderguard.vvitovec.com
+      RELEASE_SHA: ${RELEASE_SHA:-local}
+    volumes:
+      - ./data/state:/data/state
+      - ./data/documents:/data/documents
+      - ./policies:/app/policies:ro
+      - ./signatures:/app/signatures:ro
+      - ./evals:/app/evals:ro
+    tmpfs: ['/tmp:size=32m,mode=1777']
+    healthcheck:
+      test: [CMD, python, -c, 'import urllib.request; urllib.request.urlopen("http://127.0.0.1:18341/api/health",timeout=3)']
+      interval: 20s
+      timeout: 5s
+      retries: 3
+  pdf-worker:
+    image: renderguard:${RELEASE_SHA:-local}
+    container_name: renderguard-pdf-worker
+    command: [python, -m, renderguard.worker]
+    restart: unless-stopped
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 768m
+    cpus: 1.5
+    pids_limit: 64
+    environment:
+      DOCUMENT_ROOT: /data/documents
+      OMP_THREAD_LIMIT: '2'
+    volumes:
+      - ./data/documents:/data/documents
+    tmpfs: ['/tmp:size=128m,mode=1777']
+    depends_on: [gateway]
+  tunnel:
+    image: cloudflare/cloudflared:2026.3.0
+    user: '10001:10001'
+    container_name: renderguard-tunnel
+    command: [tunnel, --no-autoupdate, run, --token-file, /run/secrets/tunnel-token]
+    restart: unless-stopped
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    secrets: [tunnel-token]
+    depends_on: [gateway]
+secrets:
+  tunnel-token:
+    file: .secrets/tunnel-token

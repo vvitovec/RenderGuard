@@ -1,0 +1,142 @@
+[
+  {
+    "id": "clean",
+    "title": "Routine supplier invoice",
+    "description": "A normal approved supplier, obligation and payment QR.",
+    "expected": "allow",
+    "filename": "clean.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "hidden-account",
+    "title": "Invisible account replacement",
+    "description": "Visible invoice unchanged; its text layer introduces another IBAN.",
+    "expected": "block",
+    "filename": "hidden-account.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "qr-swap",
+    "title": "Replaced payment QR",
+    "description": "The payment QR points to a different recipient account.",
+    "expected": "block",
+    "filename": "qr-swap.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "qr-amount",
+    "title": "QR amount mismatch",
+    "description": "The QR requests more than the visible invoice and approved obligation.",
+    "expected": "block",
+    "filename": "qr-amount.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "bank-change",
+    "title": "Supplier bank-change request",
+    "description": "All document representations agree on a new, independently unverified bank account.",
+    "expected": "block",
+    "filename": "bank-change.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "hidden-total",
+    "title": "Invisible total replacement",
+    "description": "Machine-readable total conflicts with visible amount due.",
+    "expected": "block",
+    "filename": "hidden-total.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "no-qr",
+    "title": "Invoice without a QR",
+    "description": "A payment QR is optional; missing QR does not make an invoice malicious.",
+    "expected": "allow",
+    "filename": "no-qr.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "spaced-iban",
+    "title": "Formatted bank account",
+    "description": "Legitimate spaces in an IBAN normalize without changing its identity.",
+    "expected": "allow",
+    "filename": "spaced-iban.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "linden",
+    "title": "Second supplier template",
+    "description": "Another approved recurring supplier and obligation.",
+    "expected": "allow",
+    "filename": "linden.pdf",
+    "supplier_id": "linden",
+    "obligation_id": "PO-2609-028",
+    "synthetic": true
+  },
+  {
+    "id": "atlas",
+    "title": "Cross-border freight invoice",
+    "description": "Third repeat supplier with an independently approved EUR obligation.",
+    "expected": "allow",
+    "filename": "atlas.pdf",
+    "supplier_id": "atlas",
+    "obligation_id": "PO-2609-031",
+    "synthetic": true
+  },
+  {
+    "id": "ambiguous",
+    "title": "Multiple payment accounts",
+    "description": "An alternative payment account makes instructions ambiguous.",
+    "expected": "block",
+    "filename": "ambiguous.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "overbilling",
+    "title": "Amount exceeds approved order",
+    "description": "The document is internally consistent but exceeds the approved obligation.",
+    "expected": "block",
+    "filename": "overbilling.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "scanned",
+    "title": "Scanned invoice",
+    "description": "Rendered pixels and payment evidence remain legitimate.",
+    "expected": "allow",
+    "filename": "scanned.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  },
+  {
+    "id": "ocr-layer",
+    "title": "Legitimate OCR text layer",
+    "description": "Rendered pixels and payment evidence remain legitimate.",
+    "expected": "allow",
+    "filename": "ocr-layer.pdf",
+    "supplier_id": "nordlicht",
+    "obligation_id": "PO-2609-014",
+    "synthetic": true
+  }
+]
