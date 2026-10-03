@@ -1,0 +1,16 @@
+{
+  "recorded_at": 1791036581.1085482,
+  "health": {
+    "ok": true,
+    "version": "1.0.0",
+    "release_sha": "2e878172b9ef9d1bdb6b568ff9818e81f82a5e4a",
+    "bank_connected": false,
+    "worker_mode": "isolated-container"
+  },
+  "source_sha": "9eaf8897f6de38407c68d7d369ea52972a91e0e66363a71983238049118f8567",
+  "session_survived_container_recreation": true,
+  "supplier_records_survived": true,
+  "private_model_available": true,
+  "dedicated_forward_inference_passed": true,
+  "scope": "Actual public HTTPS, pre-existing signed session retained across container recreation, actual local model after dedicated forward replacement; sandbox only"
+}

@@ -1,0 +1,262 @@
+{
+  "status": "complete",
+  "mode": "offline_evidence_only",
+  "generated_at": 1791035482.66781,
+  "source_sha": "9eaf8897f6de38407c68d7d369ea52972a91e0e66363a71983238049118f8567",
+  "total": 16,
+  "passed": 16,
+  "provider_note": "Actual PDFium raster, Tesseract OCR and EPC decoding; no model was dispatched",
+  "scope": "Synthetic corpus only; this is not a general fraud detection benchmark.",
+  "false_blocks_on_positive_cases": 0,
+  "unsafe_allows_on_negative_cases": 0,
+  "p95_end_to_end_ms": null,
+  "cases": [
+    {
+      "id": "clean",
+      "title": "Routine supplier invoice",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 389,
+      "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
+    },
+    {
+      "id": "hidden-account",
+      "title": "Invisible account replacement",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "representation_ibans",
+          "title": "PDF recipient agreement",
+          "verdict": "block",
+          "reason": "Machine-readable ibans differs from visible instructions."
+        }
+      ],
+      "document_ms": 312,
+      "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
+    },
+    {
+      "id": "qr-swap",
+      "title": "Replaced payment QR",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "qr",
+          "title": "Payment QR 1",
+          "verdict": "block",
+          "reason": "QR differs from visible recipient.",
+          "page": 1,
+          "box": [
+            0.09702062643239114,
+            0.7215326497571506,
+            0.19633307868601987,
+            0.13869400971397733
+          ]
+        }
+      ],
+      "document_ms": 313,
+      "render_hash": "f0cdec6d746e558bce8694a6c53650f81d323159c15ce93bc30ae15ed4dc7208"
+    },
+    {
+      "id": "qr-amount",
+      "title": "QR amount mismatch",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "qr",
+          "title": "Payment QR 1",
+          "verdict": "block",
+          "reason": "QR differs from visible amount.",
+          "page": 1,
+          "box": [
+            0.09702062643239114,
+            0.7215326497571506,
+            0.19633307868601987,
+            0.13869400971397733
+          ]
+        }
+      ],
+      "document_ms": 313,
+      "render_hash": "ccb966e25944c7379e1073c8e33bf55254f9e2ba2671b371c4b56afbe1b3aac7"
+    },
+    {
+      "id": "bank-change",
+      "title": "Supplier bank-change request",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "supplier_account",
+          "title": "Independent supplier account",
+          "verdict": "block",
+          "reason": "Supplier bank account is unverified or differs from approved master data. Use the saved supplier contact; do not approve from the invoice alone.",
+          "supplier_version": 1
+        }
+      ],
+      "document_ms": 313,
+      "render_hash": "e45e3d140b1cc1d2c3dddb991cae1df6212b5d5e284ce03bc2abb1ad28ffd877"
+    },
+    {
+      "id": "hidden-total",
+      "title": "Invisible total replacement",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "representation_amounts_minor",
+          "title": "PDF amount agreement",
+          "verdict": "block",
+          "reason": "Machine-readable amounts_minor differs from visible instructions."
+        }
+      ],
+      "document_ms": 315,
+      "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
+    },
+    {
+      "id": "no-qr",
+      "title": "Invoice without a QR",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 291,
+      "render_hash": "0b64740efd549aa662aae4b9fda455a2c8847b58e8a08cf2e79830ea13044049"
+    },
+    {
+      "id": "spaced-iban",
+      "title": "Formatted bank account",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 396,
+      "render_hash": "49537252d0510a78995d106724b695bc48b7db8b992261884af1ea5814a1ce2f"
+    },
+    {
+      "id": "linden",
+      "title": "Second supplier template",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 314,
+      "render_hash": "08416049bf2a7732bcc12bff4ae3c5052df2ddad78e6692bbc055edb61024ff0"
+    },
+    {
+      "id": "atlas",
+      "title": "Cross-border freight invoice",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 314,
+      "render_hash": "4c7702d7a0fe83bd83cf53b13fbc031a95546cafc162d2035047ac5803c63841"
+    },
+    {
+      "id": "ambiguous",
+      "title": "Multiple payment accounts",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "visible_fields",
+          "title": "Visible payment instructions",
+          "verdict": "review",
+          "reason": "Missing or ambiguous visible fields: ibans"
+        },
+        {
+          "control": "supplier_account",
+          "title": "Independent supplier account",
+          "verdict": "block",
+          "reason": "Supplier bank account is unverified or differs from approved master data. Use the saved supplier contact; do not approve from the invoice alone.",
+          "supplier_version": 1
+        }
+      ],
+      "document_ms": 332,
+      "render_hash": "e933475b2c83b0f27d5735502b194b6482e47ddc380d15b02ba31055052b67c4"
+    },
+    {
+      "id": "overbilling",
+      "title": "Amount exceeds approved order",
+      "expected": "block",
+      "full_workflow_expected": "block",
+      "verdict": "block",
+      "passed": true,
+      "failures": [
+        {
+          "control": "approved_amount",
+          "title": "Approved obligation amount",
+          "verdict": "block",
+          "reason": "Visible total/currency differs from the independently approved obligation."
+        }
+      ],
+      "document_ms": 318,
+      "render_hash": "b0bfbb63ba493912ff507e5c162a0b7561641eee8266a02154a7ffbc62143e2f"
+    },
+    {
+      "id": "hidden-instruction",
+      "title": "Invisible approval-bypass instruction",
+      "expected": "allow",
+      "full_workflow_expected": "block",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 328,
+      "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
+    },
+    {
+      "id": "visible-instruction",
+      "title": "Visible assistant role override",
+      "expected": "allow",
+      "full_workflow_expected": "block",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 348,
+      "render_hash": "566b0b685f0c445cc71cdb7347af8d4e3a0fed45aa1cd133224cfb73e52c7d0b"
+    },
+    {
+      "id": "scanned",
+      "title": "Scanned invoice",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 331,
+      "render_hash": "ada0a9387155ee248e90c917d30d6aedba9e0d1034aa7e02890b7e610844057a"
+    },
+    {
+      "id": "ocr-layer",
+      "title": "Legitimate OCR text layer",
+      "expected": "allow",
+      "full_workflow_expected": "allow",
+      "verdict": "allow",
+      "passed": true,
+      "failures": [],
+      "document_ms": 329,
+      "render_hash": "ada0a9387155ee248e90c917d30d6aedba9e0d1034aa7e02890b7e610844057a"
+    }
+  ]
+}
