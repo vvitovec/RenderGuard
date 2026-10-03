@@ -1,6 +1,6 @@
 name: Repeat-supplier SEPA release
 profile: strict
-allowed_models: [qwen2.5:3b]
+allowed_models: [qwen2.5:7b]
 allowed_tools: [propose_payment, read_evidence]
 allowed_hosts: [approved-mcp.example]
 controls:
@@ -31,4 +31,4 @@ payment:
   max_amount_minor: 500000
   approval_ttl_seconds: 900
 rates:
-  qwen2.5:3b: {input_microusd_per_token: 0, output_microusd_per_token: 0}
+  qwen2.5:7b: {input_microusd_per_token: 0, output_microusd_per_token: 0}

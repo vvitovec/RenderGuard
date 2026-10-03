@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import patch
 
 import pytest
-from conftest import approve, import_case, prepare
+from conftest import approve, import_case, prepare, selected_model
 from pypdf import PdfWriter
 
 from renderguard.documents import process_pdf, write_result
@@ -172,7 +172,7 @@ async def test_compatible_adapter_unknown_usage_is_pessimistic(env, usage):
         async def post(self, *args, **kwargs):
             return Response()
 
-    policy_update(env, lambda p: p["rates"]["qwen2.5:3b"].update(
+    policy_update(env, lambda p: p["rates"][p["allowed_models"][0]].update(
         {"input_microusd_per_token": 10, "output_microusd_per_token": 20}))
     g = env[0].state.gateway
     g.provider = OpenAICompatibleProvider("https://never-contacted.invalid", "synthetic-key")
@@ -186,8 +186,9 @@ async def test_compatible_adapter_unknown_usage_is_pessimistic(env, usage):
 
 async def test_explicit_zero_usage_is_distinct_from_unknown(env):
     g = env[0].state.gateway
-    reservation = g.reserve(actor(env), "qwen2.5:3b", 100, 100)
-    g.settle(reservation, 0, 0, "qwen2.5:3b")
+    model = selected_model(env)
+    reservation = g.reserve(actor(env), model, 100, 100)
+    g.settle(reservation, 0, 0, model)
     assert g.store.one("SELECT status FROM reservations WHERE id=?", (reservation,))["status"] == "complete"
     assert env[1].get("/api/session").json()["usage"]["tokens"] == 0
 
@@ -196,7 +197,7 @@ async def test_explicit_zero_usage_is_distinct_from_unknown(env):
 async def test_no_dispatch_queue_failure_refunds_holds_but_counts_attempt(env, cause):
     g = env[0].state.gateway
     policy_update(env, lambda p: (p["budgets"].update({"timeout_seconds": 1}),
-                                  p["rates"]["qwen2.5:3b"].update({"input_microusd_per_token": 10})))
+                                  p["rates"][p["allowed_models"][0]].update({"input_microusd_per_token": 10})))
     await g.semaphore.acquire()
     task = asyncio.create_task(g.model(actor(env), [{"role": "user", "content": "hello"}], {}, "test", 100))
     await asyncio.sleep(0.02)

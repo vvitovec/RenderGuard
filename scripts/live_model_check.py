@@ -125,7 +125,7 @@ def main():
                 "/api/playground",
                 json={
                     "kind": "model.request",
-                    "payload": {"model": "qwen2.5:3b", "text": text},
+                    "payload": {"model": "qwen2.5:7b", "text": text},
                     "semantic": True,
                 },
             )
@@ -150,7 +150,7 @@ def main():
         "release_sha": session["release_sha"],
         "total": len(results),
         "passed": sum(c["passed"] for c in results),
-        "scope": "Twenty stated prompts against actual local Qwen2.5:3b; probabilistic, not a universal injection guarantee.",
+        "scope": "Twenty stated prompts against actual local Qwen2.5:7b; probabilistic, not a universal injection guarantee.",
         "usage": usage,
         "cases": results,
     }

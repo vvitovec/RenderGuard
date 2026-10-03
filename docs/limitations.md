@@ -18,4 +18,4 @@ External model adapter code is supplied for architecture extensibility but is no
 
 Budgets are persistent per-workspace lifetime/session caps, with no rolling financial reset. The dashboard exposes remaining and reserved limits. Hidden-text comparison is a configurable token-overlap heuristic that may hold unusual legitimate layouts; neither text overlap nor semantic risk proves authenticity. Balanced profile adds a semantic review band; explicitly disabled controls are disclosed and never remove mandatory execution identity/approval boundaries.
 
-The local Qwen2.5:3b weights use the Qwen Research License; this deployment is an evaluation prototype. See the preserved model/runtime attribution before selecting a commercial production model.
+The current Qwen2.5:7b weights use Apache-2.0; the prior 3B evaluation used the Qwen Research License. Both original notices are retained, and weights are not redistributed. Model licensing does not establish bank-account authenticity or regulatory approval.

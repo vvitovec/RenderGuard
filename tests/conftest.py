@@ -17,9 +17,11 @@ class FakeProvider:
         self.injection = False
         self.output = None
         self.messages = []
+        self.model = "deterministic-test-double"
 
     async def chat(self, model, messages, schema, max_output, timeout):
         self.calls += 1
+        self.model = model
         self.messages.append(messages)
         if self.fail:
             raise TimeoutError("simulated provider failure")
@@ -40,7 +42,7 @@ class FakeProvider:
         }
 
     async def health(self):
-        return {"available": True, "models": ["qwen2.5:3b"]}
+        return {"available": True, "models": [self.model]}
 
 
 @pytest.fixture(scope="session")
@@ -65,7 +67,12 @@ def env(tmp_path, evidence_cache):
     app = create_app(tmp_path / "state", tmp_path / "documents", provider=provider, embedded_worker=False)
     with TestClient(app) as client:
         session = client.post("/api/demo/start").json()
+        provider.model = session["policy"]["allowed_models"][0]
         yield app, client, provider, session, evidence_cache
+
+
+def selected_model(env):
+    return env[0].state.gateway.catalog.get(env[3]["workspace"])[0].allowed_models[0]
 
 
 def import_case(env, case="clean"):

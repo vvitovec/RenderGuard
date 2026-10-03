@@ -30,10 +30,15 @@ def build(target: Path, stage='draft'):
     evidence, live = load('results.json'), load('live-pipeline.json')
     semantic, browser = load('live-semantic.json'), load('browser.json')
     performance = load('performance.json')
+    sdk = load('live-sdk.json')
     if stage == 'final':
-        hashes = [report.get('source_sha') for report in (live, semantic, browser, performance)]
-        if not hashes[0] or any(value != hashes[0] for value in hashes):
-            raise ValueError('Final deck requires matching source hashes in live, semantic, browser and performance reports')
+        from renderguard.provenance import source_hash
+        reports = (evidence, live, semantic, browser, sdk, performance)
+        hashes = [report.get('source_sha') for report in reports]
+        if not hashes[0] or any(value != source_hash() for value in hashes):
+            raise ValueError('Final deck requires all recorded reports to match the current application source')
+        if any(report.get('passed') != report.get('total') or not report.get('total') for report in (evidence, live, semantic, browser, sdk)):
+            raise ValueError('Final deck requires complete passing PDF, hosted workflow, semantic, browser and SDK reports')
         if not isinstance(performance.get('gateway', {}).get('p95_ms'), (int, float)):
             raise ValueError('Final deck requires a measured deterministic gateway p95')
     test_count = test_failures = 0
@@ -42,6 +47,8 @@ def build(target: Path, stage='draft'):
         for suite in ET.parse(xml).iter('testsuite'):
             test_count += int(suite.get('tests', '0'))
             test_failures += int(suite.get('failures', '0')) + int(suite.get('errors', '0'))
+    if stage == 'final' and (not test_count or test_failures):
+        raise ValueError('Final deck requires a complete passing unit suite')
     target.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(target), pagesize=(W, H))
     c.setTitle('RenderGuard — Blue Bands Collectors — AI Control Layer')
@@ -178,7 +185,7 @@ def build(target: Path, stage='draft'):
     frame(6, 'Hybrid, configurable controls', 'Change the policy. Observe the real decision.')
     shot('controls.png', 595, 98, 625, 366)
     y = paragraph(60, 435, 'Deterministic controls protect identity, data, tools, budgets and exact release authority.', 485, 22, 32, INK)
-    y = paragraph(60, y - 17, 'The real Qwen2.5:3b semantic guard recognizes behavioral instructions in untrusted content. Risk and review/block thresholds are visible.', 485, 18, 27)
+    y = paragraph(60, y - 17, 'The real Qwen2.5:7b semantic guard recognizes behavioral instructions in untrusted content. Risk and review/block thresholds are visible.', 485, 18, 27)
     paragraph(60, y - 17, 'Live literal feed: allowed → add canary → blocked → restore → allowed. Supplied data never becomes executable code.', 485, 18, 27)
     text(60, 95, 'POST /api/sdk/propose  {document_id, payment: {account_ref, ...}}', 11, 'Courier', GREEN)
     c.showPage()

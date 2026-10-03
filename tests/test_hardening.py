@@ -1,4 +1,4 @@
-from conftest import approve, import_case, prepare
+from conftest import approve, import_case, prepare, selected_model
 from starlette.testclient import TestClient
 
 from renderguard.body_limit import BodyLimitMiddleware
@@ -140,8 +140,9 @@ def test_policy_page_limit_is_applied_by_worker(env):
 def test_output_reservation_overrun_is_accounted_and_held(env):
     g = env[0].state.gateway
     actor = Principal(env[3]["workspace"], "operator", "overrun-test")
-    reservation = g.reserve(actor, "qwen2.5:3b", 100, 100)
-    g.settle(reservation, 10000, 1000, "qwen2.5:3b")
+    model = selected_model(env)
+    reservation = g.reserve(actor, model, 100, 100)
+    g.settle(reservation, 10000, 1000, model)
     assert g.store.one("SELECT status FROM reservations WHERE id=?", (reservation,))["status"] == "overrun"
     assert env[1].get("/api/session").json()["usage"]["tokens"] == 11000
 

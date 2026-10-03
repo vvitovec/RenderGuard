@@ -13,7 +13,7 @@ services:
     cpus: 2
     pids_limit: 128
     environment:
-      OLLAMA_URL: http://127.0.0.1:11444
+      OLLAMA_URL: http://127.0.0.1:11445
       AUTH_MODE: demo
       COOKIE_SECURE: 'true'
       PUBLIC_ORIGIN: https://renderguard.vvitovec.com

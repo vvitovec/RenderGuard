@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
+from conftest import selected_model
 
 from renderguard.documents import money_minor, valid_iban
 from renderguard.gateway import Denied, Principal
@@ -20,7 +21,7 @@ def update(env, mutate):
 def test_dlp_redaction_and_block_toggle(env):
     g = env[0].state.gateway
     payload = {
-        "model": "qwen2.5:3b",
+        "model": selected_model(env),
         "text": "buyer@example.test sk-secret123456789012 DE59999999990000001001",
     }
     redacted = g.evaluate(actor(env), "model.request", payload)
@@ -88,14 +89,14 @@ def test_resource_reservations_block_before_dispatch(env, budget):
         update(
             env,
             lambda p: (
-                p["rates"]["qwen2.5:3b"].update({"input_microusd_per_token": 1000}),
+                p["rates"][p["allowed_models"][0]].update({"input_microusd_per_token": 1000}),
                 p["budgets"].update({"max_cost_microusd": 1}),
             ),
         )
     else:
-        g.reserve(actor(env), "qwen2.5:3b", 100, 100)
+        g.reserve(actor(env), selected_model(env), 100, 100)
     with pytest.raises(Denied):
-        g.reserve(actor(env), "qwen2.5:3b", 200, 100)
+        g.reserve(actor(env), selected_model(env), 200, 100)
     assert env[2].calls == 0
 
 
@@ -104,7 +105,7 @@ def test_parallel_budget_reservations_do_not_overspend(env):
 
     def request(_):
         try:
-            return g.reserve(actor(env), "qwen2.5:3b", 100, 100)
+            return g.reserve(actor(env), selected_model(env), 100, 100)
         except Denied:
             return None
 
@@ -117,18 +118,19 @@ def test_accounting_uses_rates_frozen_at_dispatch(env):
     g = env[0].state.gateway
     update(
         env,
-        lambda p: p["rates"]["qwen2.5:3b"].update(
+        lambda p: p["rates"][p["allowed_models"][0]].update(
             {"input_microusd_per_token": 10, "output_microusd_per_token": 20}
         ),
     )
-    reservation = g.reserve(actor(env), "qwen2.5:3b", 100, 100)
+    model = selected_model(env)
+    reservation = g.reserve(actor(env), model, 100, 100)
     update(
         env,
-        lambda p: p["rates"]["qwen2.5:3b"].update(
+        lambda p: p["rates"][p["allowed_models"][0]].update(
             {"input_microusd_per_token": 0, "output_microusd_per_token": 0}
         ),
     )
-    g.settle(reservation, 50, 20, "qwen2.5:3b")
+    g.settle(reservation, 50, 20, model)
     assert env[1].get("/api/session").json()["usage"]["cost"] == 900
 
 

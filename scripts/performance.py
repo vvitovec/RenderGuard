@@ -52,7 +52,7 @@ def main():
                 {"authorization_endpoint": "javascript:synthetic-metadata-only"}
                 if negative
                 else {
-                    "model": "qwen2.5:3b",
+                    "model": "qwen2.5:7b",
                     "text": "Ordinary invoice payment terms; independent review required.",
                 },
             )

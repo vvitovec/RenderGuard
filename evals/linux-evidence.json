@@ -1,8 +1,8 @@
 {
   "status": "complete",
   "mode": "offline_evidence_only",
-  "generated_at": 1791040603.3475938,
-  "source_sha": "25022cd2240559c4b35dc00e85c33bbd5b6a1c52f57b6830c22422ab39697172",
+  "generated_at": 1791042851.3054523,
+  "source_sha": "ebbfa94a8e23415e1849eff158939f00b8e70a2f2bd0d43dc064a84d0f0dd18c",
   "total": 21,
   "passed": 21,
   "provider_note": "Actual PDFium raster, Tesseract OCR and EPC decoding; no model was dispatched",
@@ -19,7 +19,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 1052,
+      "document_ms": 1011,
       "render_hash": "a0d5a80b57d587310022a9b669eec42702e44af4e0746ac9e5ab42a7a1ebcff6"
     },
     {
@@ -37,7 +37,7 @@
           "reason": "Machine-readable ibans differs from visible instructions."
         }
       ],
-      "document_ms": 945,
+      "document_ms": 970,
       "render_hash": "a0d5a80b57d587310022a9b669eec42702e44af4e0746ac9e5ab42a7a1ebcff6"
     },
     {
@@ -62,7 +62,7 @@
           ]
         }
       ],
-      "document_ms": 1000,
+      "document_ms": 992,
       "render_hash": "7bbf086fdab8a9d557e5708a1eeb5303a35a43364b8687eb875f2a98cb262f29"
     },
     {
@@ -87,7 +87,7 @@
           ]
         }
       ],
-      "document_ms": 926,
+      "document_ms": 979,
       "render_hash": "f7919a6788d8bbc1993d6d133b06ee42d0afdb4cc2a5fda5a5fb467fd7d6633b"
     },
     {
@@ -106,7 +106,7 @@
           "supplier_version": 1
         }
       ],
-      "document_ms": 1016,
+      "document_ms": 985,
       "render_hash": "1b003fe7307afacb936e93afc50f53f46d9c41d44b35924aba1c334185b45ecc"
     },
     {
@@ -124,7 +124,7 @@
           "reason": "Machine-readable amounts_minor differs from visible instructions."
         }
       ],
-      "document_ms": 1003,
+      "document_ms": 977,
       "render_hash": "a0d5a80b57d587310022a9b669eec42702e44af4e0746ac9e5ab42a7a1ebcff6"
     },
     {
@@ -135,7 +135,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 886,
+      "document_ms": 894,
       "render_hash": "fe7cca50da543b92a1136cfcd7f35758cabc651bdc879663371005b91e40d8bb"
     },
     {
@@ -146,7 +146,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 970,
+      "document_ms": 987,
       "render_hash": "cd27efa28263ed6532eeedb0ca9b7bc7b89ef8fcd1a0139e7a8b882663422f12"
     },
     {
@@ -157,7 +157,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 976,
+      "document_ms": 998,
       "render_hash": "f8255242013d11697d7be2bddb05e95e34ecf25d694f76eef636a8d70ed9d59a"
     },
     {
@@ -168,7 +168,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 925,
+      "document_ms": 977,
       "render_hash": "367da370791083a56f58be6607eed93fbe8505210a9423655aca98b767c4bf1f"
     },
     {
@@ -193,7 +193,7 @@
           "supplier_version": 1
         }
       ],
-      "document_ms": 1081,
+      "document_ms": 1076,
       "render_hash": "4ed0b08fbeb36aad87c3a13413fc6c8b40c25cfc3547b19bfca87f2a90bd733e"
     },
     {
@@ -211,7 +211,7 @@
           "reason": "Visible total/currency differs from the independently approved obligation."
         }
       ],
-      "document_ms": 986,
+      "document_ms": 987,
       "render_hash": "d80a062fac20fa46bf4c29ad99420417432793d368c3777a42d546043e4778b7"
     },
     {
@@ -233,7 +233,7 @@
           "comparison_bounded": true
         }
       ],
-      "document_ms": 979,
+      "document_ms": 986,
       "render_hash": "a0d5a80b57d587310022a9b669eec42702e44af4e0746ac9e5ab42a7a1ebcff6"
     },
     {
@@ -244,7 +244,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 1066,
+      "document_ms": 1093,
       "render_hash": "bd62379f452cb807c69440397257941c8643b975d913e0d42a6faa93668c457f"
     },
     {
@@ -255,7 +255,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 1008,
+      "document_ms": 995,
       "render_hash": "47608019452342da01769fce78c47a5f6d18723c6575cc7ddb218d57c489ee4a"
     },
     {
@@ -266,7 +266,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 989,
+      "document_ms": 1013,
       "render_hash": "47608019452342da01769fce78c47a5f6d18723c6575cc7ddb218d57c489ee4a"
     },
     {
@@ -277,7 +277,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 1084,
+      "document_ms": 1117,
       "render_hash": "ac1ca78216512ce0a3c6e236c65af85f17709f1c5d4baa595f4d096ef9e18f8d"
     },
     {
@@ -299,7 +299,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 846,
+      "document_ms": 838,
       "render_hash": "f4f72ade95d111fab1c6ac604431d126e6d204d84afeed575e465b6784e77575"
     },
     {
@@ -321,7 +321,7 @@
           "comparison_bounded": true
         }
       ],
-      "document_ms": 919,
+      "document_ms": 939,
       "render_hash": "a0d5a80b57d587310022a9b669eec42702e44af4e0746ac9e5ab42a7a1ebcff6"
     },
     {
@@ -378,7 +378,7 @@
           "reason": "Payment amount 0 minor units; ceiling 500000."
         }
       ],
-      "document_ms": 378,
+      "document_ms": 355,
       "render_hash": "ed40ece11b5e429f92a6f962644ffa6da8d9a895e95aa054d4a55a13c898b69f"
     }
   ]

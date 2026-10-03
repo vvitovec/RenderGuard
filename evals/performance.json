@@ -1,6 +1,6 @@
 {
-  "recorded_at": 1791040751.8203819,
-  "source_sha": "ebbfa94a8e23415e1849eff158939f00b8e70a2f2bd0d43dc064a84d0f0dd18c",
+  "recorded_at": 1791044364.487821,
+  "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
   "host": "Darwin arm64",
   "requests": 300,
   "passed": 300,
@@ -8,20 +8,20 @@
   "scope": "Sequential synthetic deterministic gateway checks, including policy/catalog reads, privacy/permissions and SQLite audit persistence. No model, OCR, payment execution or network request. Not a throughput/load benchmark.",
   "gateway": {
     "count": 300,
-    "p50_ms": 1.67,
-    "p95_ms": 1.87,
-    "max_ms": 2.255
+    "p50_ms": 1.666,
+    "p95_ms": 1.887,
+    "max_ms": 2.424
   },
   "allowed": {
     "count": 150,
-    "p50_ms": 1.683,
-    "p95_ms": 1.882,
-    "max_ms": 2.106
+    "p50_ms": 1.7,
+    "p95_ms": 1.883,
+    "max_ms": 2.358
   },
   "blocked": {
     "count": 150,
-    "p50_ms": 1.653,
-    "p95_ms": 1.852,
-    "max_ms": 2.255
+    "p50_ms": 1.651,
+    "p95_ms": 1.887,
+    "max_ms": 2.424
   }
 }

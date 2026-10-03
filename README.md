@@ -30,7 +30,7 @@ The persona selector is explicitly a **demo mechanism**, not enterprise authenti
 
 ## Run locally
 
-Requirements: Python 3.12, `uv`, Node 20.19+ / 22, English Tesseract OCR, and Ollama with `qwen2.5:3b`. No paid API key is needed. Model download is approximately 1.9 GB.
+Requirements: Python 3.12, `uv`, Node 20.19+ / 22, English Tesseract OCR, and Ollama with `qwen2.5:7b`. No paid API key is needed. Model download is approximately 4.7 GB.
 
 ```sh
 # macOS prerequisites (if missing)
@@ -41,7 +41,7 @@ ollama serve
 In another terminal:
 
 ```sh
-ollama pull qwen2.5:3b
+ollama pull qwen2.5:7b
 uv sync --extra dev
 npm ci
 npm run build
@@ -136,4 +136,4 @@ docs/           Research, threat boundaries, rubric mapping, demo and operating 
 
 Final recorded counts and environment interpretation: [verification](docs/verification.md). Prepared packages are for team review only; nothing is submitted automatically.
 
-Review-driven fixes and exact boundaries: [critique/revision record](docs/revision-review.md). Dependency/model attribution and original notices: [third-party inventory](docs/third-party-licenses.md). The actual 3B model uses the Qwen Research License; the prototype is for evaluation, and commercial deployment needs a suitable licensed model.
+Review-driven fixes and exact boundaries: [critique/revision record](docs/revision-review.md). Dependency/model attribution and original notices: [third-party inventory](docs/third-party-licenses.md). The current 7B model uses Apache-2.0; historical 3B evaluation notices remain preserved. Model weights are not bundled.

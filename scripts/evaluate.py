@@ -155,7 +155,7 @@ def main():
         "source_sha": (next(iter({c["source_sha"] for c in cases if "source_sha" in c}), None) if args.url else source_hash()),
         "total": len(cases),
         "passed": sum(c["passed"] for c in cases),
-        "provider_note": "Real local Qwen2.5:3b, deployed PDF worker and sandbox releases"
+        "provider_note": "Real local Qwen2.5:7b, deployed PDF worker and sandbox releases"
         if args.url
         else "Actual PDFium raster, Tesseract OCR and EPC decoding; no model was dispatched",
         "scope": "Synthetic corpus only; this is not a general fraud detection benchmark.",

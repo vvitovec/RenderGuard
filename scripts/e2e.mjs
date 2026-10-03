@@ -25,6 +25,28 @@ async function step(name, fn) {
 async function idle() {
   await page.locator('.shell[data-busy=""]').waitFor({ timeout: 120000 });
 }
+async function eventually(check, description, timeout = 30000) {
+  const deadline = Date.now() + timeout;
+  let lastError;
+  do {
+    try {
+      await check();
+      return;
+    } catch (error) {
+      lastError = error;
+      await page.waitForTimeout(100);
+    }
+  } while (Date.now() < deadline);
+  throw new Error(`Timed out waiting for ${description}`, { cause: lastError });
+}
+function responseFor(path, method = "GET", timeout = 30000) {
+  return page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === `/api${path}` &&
+      response.request().method() === method,
+    { timeout },
+  );
+}
 async function stable() {
   await idle();
   await page
@@ -40,11 +62,47 @@ async function screenshot(name, locator) {
   else await page.screenshot({ path: `${out}/${name}`, fullPage: true });
 }
 async function view(name) {
+  // React renders a new view before its loading effect starts. Wait for that
+  // view's actual requests, then its content; an initially empty busy flag is
+  // not proof that the view has loaded.
+  const paths = {
+    "Release register": ["/events", "/metrics", "/receipts"],
+    Controls: ["/policy"],
+    "Test lab": ["/evaluation"],
+  };
+  const pending = (paths[name] || []).map((path) => responseFor(path));
   await page.getByRole("button", { name, exact: true }).click();
+  const responses = await Promise.all(pending);
+  for (const response of responses) {
+    assert.ok(response.ok(), `View ${name}: ${response.status()} ${response.url()}`);
+    await response.finished();
+  }
+  await page.getByRole("heading", {
+    name: {
+      Workbench: "Payment workbench",
+      Controls: "Policy control room",
+      "Test lab": "Test the boundary",
+    }[name] || name,
+    exact: true,
+  }).waitFor();
+  if (name === "Controls") {
+    const policy = (await responses[0].json()).policy;
+    await eventually(async () => {
+      assert.deepEqual(
+        JSON.parse(await page.getByLabel("Full policy · editable JSON").inputValue()),
+        policy,
+      );
+    }, "loaded policy editor");
+  }
+  if (name === "Test lab") await page.getByTestId("evaluation-status").waitFor();
   await idle();
 }
 async function persona(role) {
+  const pending = responseFor("/session/persona", "POST");
   await page.getByLabel("Demo persona").selectOption(role);
+  const response = await pending;
+  assert.ok(response.ok(), `Persona ${role}: ${response.status()}`);
+  await response.finished();
   await idle();
 }
 async function invoice(id) {
@@ -53,6 +111,9 @@ async function invoice(id) {
   await page
     .getByRole("button", { name: "Open this case", exact: true })
     .click();
+  // Finish import/selection first so an old invoice's ready label cannot
+  // satisfy the new document's worker completion check.
+  await idle();
   await page
     .getByText("Evidence ready", { exact: true })
     .first()
@@ -82,7 +143,7 @@ try {
     },
   );
   await step(
-    "Actual clean PDF, account-handle model input, human approval and sandbox release",
+    "Actual clean PDF and account-handle model input",
     async () => {
       await invoice("clean");
       await page
@@ -106,6 +167,11 @@ try {
       await page
         .getByRole("tab", { name: "Rendered page", exact: true })
         .click();
+    },
+  );
+  await step(
+    "Authenticated human approval and sandbox release",
+    async () => {
       await persona("reviewer");
       await page
         .getByRole("button", { name: "Approve this exact action", exact: true })
@@ -128,10 +194,12 @@ try {
     "Immutable receipt and redacted audit / CSV downloads",
     async () => {
       await view("Release register");
-      assert.equal(
-        await page.getByTestId("receipt-register").locator("tbody tr").count(),
-        1,
-      );
+      await eventually(async () => {
+        assert.equal(
+          await page.getByTestId("receipt-register").locator("tbody tr").count(),
+          1,
+        );
+      }, "one immutable receipt row");
       let pending = page.waitForEvent("download");
       await page.getByRole("link", { name: "Export redacted JSONL" }).click();
       let download = await pending;
@@ -206,10 +274,13 @@ try {
       assert.equal(metrics.payments.blocked.count, 1);
       assert.ok(metrics.held_controls.qr >= 1);
       assert.ok(metrics.stage_latency.gateway.count > 0);
-      assert.match(
-        await page.getByTestId("management-summary").innerText(),
-        /€1,240.00/,
-      );
+      await page.getByTestId("management-summary").waitFor();
+      await eventually(async () => {
+        const summary = page.getByTestId("management-summary");
+        assert.match(await summary.innerText(), /€1,240.00/);
+        assert.equal(await summary.locator(".outcome.released strong").innerText(), "1");
+        assert.equal(await summary.locator(".outcome.blocked strong").innerText(), "1");
+      }, "current released and blocked invoice totals");
       assert.match(
         await page.locator(".stage-report").innerText(),
         /Deterministic gateway/,
@@ -230,9 +301,11 @@ try {
       const policy = JSON.parse(await editor.inputValue());
       policy.controls.pii_action = "block";
       await editor.fill(JSON.stringify(policy, null, 2));
+      const applied = responseFor("/policy", "PUT");
       await page
         .getByRole("button", { name: "Apply policy", exact: true })
         .click();
+      assert.ok((await applied).ok(), "Policy update accepted");
       await idle();
       await stable();
       const top = await page.locator(".policy-provenance").boundingBox();
@@ -250,14 +323,18 @@ try {
       await page
         .getByRole("button", { name: "Secret leak", exact: true })
         .click();
+      const evaluated = responseFor("/playground", "POST", 120000);
       await page
         .getByRole("button", { name: "Evaluate interaction", exact: true })
         .click();
+      assert.ok((await evaluated).ok(), "Privacy probe completed");
       await idle();
-      assert.match(
-        await page.locator(".lab-layout aside").innerText(),
-        /Sensitive data blocked before dispatch/,
-      );
+      await eventually(async () => {
+        assert.match(
+          await page.locator(".lab-layout aside").innerText(),
+          /Sensitive data blocked before dispatch/,
+        );
+      }, "privacy probe final decision");
       await screenshot("control-probe.png", page.locator(".lab-layout"));
     },
   );
@@ -268,15 +345,19 @@ try {
       await page
         .getByRole("button", { name: "Semantic injection", exact: true })
         .click();
+      const evaluated = responseFor("/playground", "POST", 120000);
       await page
         .getByRole("button", { name: "Evaluate interaction", exact: true })
         .click();
+      assert.ok((await evaluated).ok(), "Semantic probe completed");
       await idle();
-      assert.match(
-        await page.locator(".lab-layout aside").innerText(),
-        /Semantic instruction check/,
-      );
-      assert.ok(await page.locator(".lab-layout aside .badge.block").count());
+      await eventually(async () => {
+        assert.match(
+          await page.locator(".lab-layout aside").innerText(),
+          /Semantic instruction check/,
+        );
+        assert.ok(await page.locator(".lab-layout aside .badge.block").count());
+      }, "semantic probe final decision");
       const after = await get("/metrics");
       assert.equal(
         after.final_interactions.block,
@@ -327,7 +408,9 @@ try {
         ),
       );
       const status = page.getByTestId("evaluation-status");
-      assert.equal(await status.getAttribute("data-current"), "true");
+      await eventually(async () => {
+        assert.equal(await status.getAttribute("data-current"), "true");
+      }, "current recorded evaluation banner");
       assert.match(await status.innerText(), /Recorded full workflow suite/);
       assert.equal(
         await page
