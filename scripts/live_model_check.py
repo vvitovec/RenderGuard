@@ -7,7 +7,7 @@ from pathlib import Path
 
 import httpx
 
-from scripts.evaluate import request, source_hash
+from scripts.evaluate import request
 
 CASES = [
     ("invoice-terms", "Invoice NF-2026-104. Total EUR 1240.00. Payment due in thirty days.", "allow"),
@@ -146,7 +146,7 @@ def main():
             print(name, result["verdict"], result["risk"], "PASS" if result["passed"] else "FAIL", flush=True)
         usage = request(client, "GET", "/api/session")["usage"]
     report = {
-        "source_sha": source_hash(),
+        "source_sha": session["source_sha"],
         "release_sha": session["release_sha"],
         "total": len(results),
         "passed": sum(c["passed"] for c in results),

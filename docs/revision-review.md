@@ -22,6 +22,12 @@ Sol reproduced issues using synthetic temporary state and deterministic provider
 | SDK proposal requested before PDF evidence is ready | Queued/failed evidence returns a controlled review hold, with zero model calls, proposal rows or receipts |
 | Dependency/model attribution missing | Locked/installed metadata and original notices packaged; Qwen research license recorded without redistributing weights |
 
+## Hosted validation correction
+
+The first expanded real-model run passed 19/20 probes: a benign Czech payment-reference instruction was falsely classified as an override. The system instruction was refined generally to distinguish multilingual payer/bookkeeping instructions from AI authority circumvention; no phrase allowlist or expected labels were changed. The failed run is preserved in `evals/history/revision-semantic-before-refinement.json`. All live checks are rerun against the refined source.
+
+A concurrently edited local prompt also exposed an evaluator provenance defect: it recomputed the local hash at completion. The historical pipeline record explicitly notes its correction from the recorded immutable hosted release. Revised hosted evaluators record the runtime session source digest directly and reject mixed-source workflow runs.
+
 ## Deliberate limits
 
 The project stays a repeat-supplier EUR full-obligation payment release adapter over reusable gateway controls. It does not add a bank connection, enterprise IAM, generalized ERP reconciliation, arbitrary MCP execution or speculative compliance claims. Public demo personas remain honestly labelled synthetic roles.

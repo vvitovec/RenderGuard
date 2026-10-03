@@ -78,6 +78,7 @@ def live(item, url):
             "agent_mode": proposal["agent"]["mode"],
             "document_ms": doc["data"].get("processing_ms"),
             "release_sha": session["release_sha"],
+            "source_sha": session["source_sha"],
             "provider_calls": request(client, "GET", "/api/session")["usage"]["model_calls"],
         }
         if result["verdict"] == "allow":
@@ -144,11 +145,14 @@ def main():
             print(item["id"], case["verdict"], "PASS" if case["passed"] else "FAIL", flush=True)
     values = [c["end_to_end_ms"] for c in cases if "end_to_end_ms" in c]
     values.sort()
+    runtime_sources = {c["source_sha"] for c in cases if "source_sha" in c}
+    if args.url and len(runtime_sources) != 1:
+        raise SystemExit("Hosted suite crossed differing application sources; rerun against one stable deployment")
     report = {
         "status": "complete",
         "mode": "full_live_workflow" if args.url else "offline_evidence_only",
         "generated_at": now(),
-        "source_sha": source_hash(),
+        "source_sha": (next(iter({c["source_sha"] for c in cases if "source_sha" in c}), None) if args.url else source_hash()),
         "total": len(cases),
         "passed": sum(c["passed"] for c in cases),
         "provider_note": "Real local Qwen2.5:3b, deployed PDF worker and sandbox releases"

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import httpx
 
-from scripts.evaluate import request, source_hash
+from scripts.evaluate import request
 
 
 def main():
@@ -80,7 +80,7 @@ def main():
         report = {
             "recorded_at": time.time(),
             "base_url": args.url,
-            "source_sha": source_hash(),
+            "source_sha": session["source_sha"],
             "release_sha": session["release_sha"],
             "passed": len(checks),
             "total": 7,
