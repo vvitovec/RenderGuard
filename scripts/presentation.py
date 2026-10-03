@@ -173,7 +173,8 @@ def build(target: Path, stage='draft'):
     text(60, 458, 'MINIMIZED OUTGOING MODEL INPUT', 12, 'Helvetica-Bold', GREEN)
     shot('model-input.png', 60, 132, 695, 300)
     text(795, 458, 'EXACT ACTION / SANDBOX RECEIPT', 12, 'Helvetica-Bold', GREEN)
-    shot('release-detail.png', 795, 100, 425, 332)
+    shot('release-detail.png', 795, 210, 425, 220)
+    paragraph(795, 175, 'One approved obligation. One saved receipt. Retries preserve the same effect.', 425, 18, 27, INK)
     paragraph(60, 91, 'The agent prepares; the human approves. Retrying returns the existing receipt.', 710, 17, 25, INK)
     c.showPage()
 

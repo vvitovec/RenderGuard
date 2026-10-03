@@ -1,15 +1,15 @@
 {
   "status": "complete",
   "mode": "full_live_workflow",
-  "generated_at": 1791044699.6254945,
-  "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+  "generated_at": 1791045816.9265978,
+  "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
   "total": 21,
   "passed": 21,
   "provider_note": "Real local Qwen2.5:7b, deployed PDF worker and sandbox releases",
   "scope": "Synthetic corpus only; this is not a general fraud detection benchmark.",
   "false_blocks_on_positive_cases": 0,
   "unsafe_allows_on_negative_cases": 0,
-  "p95_end_to_end_ms": 29130,
+  "p95_end_to_end_ms": 27196,
   "cases": [
     {
       "id": "clean",
@@ -20,50 +20,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 782,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 742,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-F0B9F5F5FEA2",
+      "sandbox_receipt": "RG-8DE604D8F121",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 3.684,
-          "p95_ms": 5.478
+          "p50_ms": 4.269,
+          "p95_ms": 5.682
         },
         "document": {
           "count": 1,
-          "p50_ms": 782,
-          "p95_ms": 782
+          "p50_ms": 742,
+          "p95_ms": 742
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 8.893,
-          "p95_ms": 8.893
+          "p50_ms": 8.631,
+          "p95_ms": 8.631
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 6984,
-          "p95_ms": 6984
+          "p50_ms": 7048,
+          "p95_ms": 7048
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 9080,
-          "p95_ms": 9080
+          "p50_ms": 9034,
+          "p95_ms": 9034
         },
         "queue": {
           "count": 2,
-          "p50_ms": 7525,
-          "p95_ms": 7525
+          "p50_ms": 7157,
+          "p95_ms": 7157
         },
         "executor": {
           "count": 2,
-          "p50_ms": 17.547,
-          "p95_ms": 17.547
+          "p50_ms": 23.105,
+          "p95_ms": 23.105
         }
       },
-      "end_to_end_ms": 29130
+      "end_to_end_ms": 33071
     },
     {
       "id": "hidden-account",
@@ -81,25 +81,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 731,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 736,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.493,
-          "p95_ms": 5.493
+          "p50_ms": 4.487,
+          "p95_ms": 4.487
         },
         "document": {
           "count": 1,
-          "p50_ms": 731,
-          "p95_ms": 731
+          "p50_ms": 736,
+          "p95_ms": 736
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.556,
-          "p95_ms": 9.556
+          "p50_ms": 7.82,
+          "p95_ms": 7.82
         },
         "semantic": {
           "count": 0,
@@ -122,7 +122,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2268
+      "end_to_end_ms": 2311
     },
     {
       "id": "qr-swap",
@@ -147,25 +147,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 860,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 814,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 4.582,
-          "p95_ms": 4.582
+          "p50_ms": 3.736,
+          "p95_ms": 3.736
         },
         "document": {
           "count": 1,
-          "p50_ms": 860,
-          "p95_ms": 860
+          "p50_ms": 814,
+          "p95_ms": 814
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 6.215,
-          "p95_ms": 6.215
+          "p50_ms": 4.989,
+          "p95_ms": 4.989
         },
         "semantic": {
           "count": 0,
@@ -188,7 +188,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2327
+      "end_to_end_ms": 2444
     },
     {
       "id": "qr-amount",
@@ -213,25 +213,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 870,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 853,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.449,
-          "p95_ms": 5.449
+          "p50_ms": 3.966,
+          "p95_ms": 3.966
         },
         "document": {
           "count": 1,
-          "p50_ms": 870,
-          "p95_ms": 870
+          "p50_ms": 853,
+          "p95_ms": 853
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.018,
-          "p95_ms": 9.018
+          "p50_ms": 4.574,
+          "p95_ms": 4.574
         },
         "semantic": {
           "count": 0,
@@ -254,7 +254,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2373
+      "end_to_end_ms": 2442
     },
     {
       "id": "bank-change",
@@ -273,25 +273,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 844,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 901,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 2.923,
-          "p95_ms": 2.923
+          "p50_ms": 4.422,
+          "p95_ms": 4.422
         },
         "document": {
           "count": 1,
-          "p50_ms": 844,
-          "p95_ms": 844
+          "p50_ms": 901,
+          "p95_ms": 901
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.812,
-          "p95_ms": 4.812
+          "p50_ms": 8.943,
+          "p95_ms": 8.943
         },
         "semantic": {
           "count": 0,
@@ -314,7 +314,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2298
+      "end_to_end_ms": 2529
     },
     {
       "id": "hidden-total",
@@ -332,25 +332,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 852,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 848,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 2.844,
-          "p95_ms": 2.844
+          "p50_ms": 2.994,
+          "p95_ms": 2.994
         },
         "document": {
           "count": 1,
-          "p50_ms": 852,
-          "p95_ms": 852
+          "p50_ms": 848,
+          "p95_ms": 848
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.593,
-          "p95_ms": 4.593
+          "p50_ms": 4.695,
+          "p95_ms": 4.695
         },
         "semantic": {
           "count": 0,
@@ -373,7 +373,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2289
+      "end_to_end_ms": 2265
     },
     {
       "id": "no-qr",
@@ -384,50 +384,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 717,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 720,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-68054605470F",
+      "sandbox_receipt": "RG-D893B03DCB09",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 4.009,
-          "p95_ms": 5.123
+          "p50_ms": 2.991,
+          "p95_ms": 4.095
         },
         "document": {
           "count": 1,
-          "p50_ms": 717,
-          "p95_ms": 717
+          "p50_ms": 720,
+          "p95_ms": 720
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.673,
-          "p95_ms": 4.673
+          "p50_ms": 4.653,
+          "p95_ms": 4.653
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 6752,
-          "p95_ms": 6752
+          "p50_ms": 6785,
+          "p95_ms": 6785
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 9079,
-          "p95_ms": 9079
+          "p50_ms": 9048,
+          "p95_ms": 9048
         },
         "queue": {
           "count": 2,
-          "p50_ms": 4499,
-          "p95_ms": 4499
+          "p50_ms": 4719,
+          "p95_ms": 4719
         },
         "executor": {
           "count": 2,
-          "p50_ms": 18.467,
-          "p95_ms": 18.467
+          "p50_ms": 23.579,
+          "p95_ms": 23.579
         }
       },
-      "end_to_end_ms": 27058
+      "end_to_end_ms": 27196
     },
     {
       "id": "spaced-iban",
@@ -438,50 +438,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 763,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 785,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-4683AD5422F0",
+      "sandbox_receipt": "RG-A6E2869C29D5",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 3.42,
-          "p95_ms": 5.881
+          "p50_ms": 4.337,
+          "p95_ms": 5.144
         },
         "document": {
           "count": 1,
-          "p50_ms": 763,
-          "p95_ms": 763
+          "p50_ms": 785,
+          "p95_ms": 785
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.793,
-          "p95_ms": 4.793
+          "p50_ms": 8.717,
+          "p95_ms": 8.717
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 6674,
-          "p95_ms": 6674
+          "p50_ms": 6783,
+          "p95_ms": 6783
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 8870,
-          "p95_ms": 8870
+          "p50_ms": 8878,
+          "p95_ms": 8878
         },
         "queue": {
           "count": 2,
-          "p50_ms": 2435,
-          "p95_ms": 2435
+          "p50_ms": 2443,
+          "p95_ms": 2443
         },
         "executor": {
           "count": 2,
-          "p50_ms": 21.953,
-          "p95_ms": 21.953
+          "p50_ms": 17.648,
+          "p95_ms": 17.648
         }
       },
-      "end_to_end_ms": 22943
+      "end_to_end_ms": 22917
     },
     {
       "id": "linden",
@@ -492,50 +492,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 710,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 709,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-EAB3345F38CF",
+      "sandbox_receipt": "RG-3C298C43CA14",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 2.996,
-          "p95_ms": 5.031
+          "p50_ms": 4.206,
+          "p95_ms": 6.261
         },
         "document": {
           "count": 1,
-          "p50_ms": 710,
-          "p95_ms": 710
+          "p50_ms": 709,
+          "p95_ms": 709
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 8.877,
-          "p95_ms": 8.877
+          "p50_ms": 8.602,
+          "p95_ms": 8.602
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 7375,
-          "p95_ms": 7375
+          "p50_ms": 7420,
+          "p95_ms": 7420
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 8749,
-          "p95_ms": 8749
+          "p50_ms": 8698,
+          "p95_ms": 8698
         },
         "queue": {
           "count": 2,
-          "p50_ms": 2285,
-          "p95_ms": 2285
+          "p50_ms": 2274,
+          "p95_ms": 2274
         },
         "executor": {
           "count": 2,
-          "p50_ms": 21.239,
-          "p95_ms": 21.239
+          "p50_ms": 22.309,
+          "p95_ms": 22.309
         }
       },
-      "end_to_end_ms": 23299
+      "end_to_end_ms": 23370
     },
     {
       "id": "atlas",
@@ -546,50 +546,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 747,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 729,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-5F5420D7006C",
+      "sandbox_receipt": "RG-563D5503C180",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 4.047,
-          "p95_ms": 5.332
+          "p50_ms": 3.505,
+          "p95_ms": 5.183
         },
         "document": {
           "count": 1,
-          "p50_ms": 747,
-          "p95_ms": 747
+          "p50_ms": 729,
+          "p95_ms": 729
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.184,
-          "p95_ms": 9.184
+          "p50_ms": 8.921,
+          "p95_ms": 8.921
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 7055,
-          "p95_ms": 7055
+          "p50_ms": 7061,
+          "p95_ms": 7061
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 9122,
-          "p95_ms": 9122
+          "p50_ms": 8980,
+          "p95_ms": 8980
         },
         "queue": {
           "count": 2,
-          "p50_ms": 9506,
-          "p95_ms": 9506
+          "p50_ms": 4721,
+          "p95_ms": 4721
         },
         "executor": {
           "count": 2,
-          "p50_ms": 13.087,
-          "p95_ms": 13.087
+          "p50_ms": 21.955,
+          "p95_ms": 21.955
         }
       },
-      "end_to_end_ms": 33156
+      "end_to_end_ms": 26293
     },
     {
       "id": "ambiguous",
@@ -614,25 +614,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 761,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 768,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.207,
-          "p95_ms": 5.207
+          "p50_ms": 5.335,
+          "p95_ms": 5.335
         },
         "document": {
           "count": 1,
-          "p50_ms": 761,
-          "p95_ms": 761
+          "p50_ms": 768,
+          "p95_ms": 768
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.297,
-          "p95_ms": 9.297
+          "p50_ms": 8.695,
+          "p95_ms": 8.695
         },
         "semantic": {
           "count": 0,
@@ -655,7 +655,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2283
+      "end_to_end_ms": 2528
     },
     {
       "id": "overbilling",
@@ -673,25 +673,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 895,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 898,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 4.105,
-          "p95_ms": 4.105
+          "p50_ms": 2.801,
+          "p95_ms": 2.801
         },
         "document": {
           "count": 1,
-          "p50_ms": 895,
-          "p95_ms": 895
+          "p50_ms": 898,
+          "p95_ms": 898
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.563,
-          "p95_ms": 4.563
+          "p50_ms": 4.654,
+          "p95_ms": 4.654
         },
         "semantic": {
           "count": 0,
@@ -714,7 +714,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2292
+      "end_to_end_ms": 2317
     },
     {
       "id": "hidden-instruction",
@@ -743,25 +743,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 759,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 783,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 2.83,
-          "p95_ms": 2.83
+          "p50_ms": 3.054,
+          "p95_ms": 3.054
         },
         "document": {
           "count": 1,
-          "p50_ms": 759,
-          "p95_ms": 759
+          "p50_ms": 783,
+          "p95_ms": 783
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 6.21,
-          "p95_ms": 6.21
+          "p50_ms": 7.602,
+          "p95_ms": 7.602
         },
         "semantic": {
           "count": 0,
@@ -784,7 +784,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2228
+      "end_to_end_ms": 2292
     },
     {
       "id": "visible-instruction",
@@ -803,25 +803,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 908,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 894,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.384,
-          "p95_ms": 5.384
+          "p50_ms": 6.451,
+          "p95_ms": 6.451
         },
         "document": {
           "count": 1,
-          "p50_ms": 908,
-          "p95_ms": 908
+          "p50_ms": 894,
+          "p95_ms": 894
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.049,
-          "p95_ms": 9.049
+          "p50_ms": 12.841,
+          "p95_ms": 12.841
         },
         "semantic": {
           "count": 0,
@@ -844,7 +844,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2251
+      "end_to_end_ms": 2455
     },
     {
       "id": "scanned",
@@ -855,50 +855,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 830,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 878,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-CDAF0CEC0DE9",
+      "sandbox_receipt": "RG-8BF302CA4164",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 3.566,
-          "p95_ms": 4.885
+          "p50_ms": 4.025,
+          "p95_ms": 5.133
         },
         "document": {
           "count": 1,
-          "p50_ms": 830,
-          "p95_ms": 830
+          "p50_ms": 878,
+          "p95_ms": 878
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 5.364,
-          "p95_ms": 5.364
+          "p50_ms": 8.385,
+          "p95_ms": 8.385
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 5409,
-          "p95_ms": 5409
+          "p50_ms": 5527,
+          "p95_ms": 5527
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 7670,
-          "p95_ms": 7670
+          "p50_ms": 7827,
+          "p95_ms": 7827
         },
         "queue": {
           "count": 2,
-          "p50_ms": 3086,
-          "p95_ms": 3086
+          "p50_ms": 3144,
+          "p95_ms": 3144
         },
         "executor": {
           "count": 2,
-          "p50_ms": 18.555,
-          "p95_ms": 18.555
+          "p50_ms": 23.998,
+          "p95_ms": 23.998
         }
       },
-      "end_to_end_ms": 19093
+      "end_to_end_ms": 22207
     },
     {
       "id": "ocr-layer",
@@ -909,50 +909,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 767,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 761,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-99F30A6D4E45",
+      "sandbox_receipt": "RG-F09DB37473E1",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 2.996,
-          "p95_ms": 5.032
+          "p50_ms": 4.248,
+          "p95_ms": 5.139
         },
         "document": {
           "count": 1,
-          "p50_ms": 767,
-          "p95_ms": 767
+          "p50_ms": 761,
+          "p95_ms": 761
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 8.504,
-          "p95_ms": 8.504
+          "p50_ms": 8.655,
+          "p95_ms": 8.655
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 6198,
-          "p95_ms": 6198
+          "p50_ms": 6671,
+          "p95_ms": 6671
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 8728,
-          "p95_ms": 8728
+          "p50_ms": 8778,
+          "p95_ms": 8778
         },
         "queue": {
           "count": 2,
-          "p50_ms": 3815,
-          "p95_ms": 3815
+          "p50_ms": 4555,
+          "p95_ms": 4555
         },
         "executor": {
           "count": 2,
-          "p50_ms": 14.859,
-          "p95_ms": 14.859
+          "p50_ms": 22.61,
+          "p95_ms": 22.61
         }
       },
-      "end_to_end_ms": 24750
+      "end_to_end_ms": 26270
     },
     {
       "id": "hybrid-visible-instruction",
@@ -971,25 +971,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 818,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 848,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.037,
-          "p95_ms": 5.037
+          "p50_ms": 5.149,
+          "p95_ms": 5.149
         },
         "document": {
           "count": 1,
-          "p50_ms": 818,
-          "p95_ms": 818
+          "p50_ms": 848,
+          "p95_ms": 848
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 8.965,
-          "p95_ms": 8.965
+          "p50_ms": 8.459,
+          "p95_ms": 8.459
         },
         "semantic": {
           "count": 0,
@@ -1012,7 +1012,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2301
+      "end_to_end_ms": 2208
     },
     {
       "id": "hybrid-benign",
@@ -1023,50 +1023,50 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 909,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 835,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-F51A854FA201",
+      "sandbox_receipt": "RG-AB707ADFEEFE",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 2.961,
-          "p95_ms": 4.086
+          "p50_ms": 4.244,
+          "p95_ms": 5.207
         },
         "document": {
           "count": 1,
-          "p50_ms": 909,
-          "p95_ms": 909
+          "p50_ms": 835,
+          "p95_ms": 835
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.596,
-          "p95_ms": 4.596
+          "p50_ms": 8.579,
+          "p95_ms": 8.579
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 6241,
-          "p95_ms": 6241
+          "p50_ms": 8846,
+          "p95_ms": 8846
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 8872,
-          "p95_ms": 8872
+          "p50_ms": 8804,
+          "p95_ms": 8804
         },
         "queue": {
           "count": 2,
-          "p50_ms": 2141,
-          "p95_ms": 2141
+          "p50_ms": 0,
+          "p95_ms": 0
         },
         "executor": {
           "count": 2,
-          "p50_ms": 22.135,
-          "p95_ms": 22.135
+          "p50_ms": 22.223,
+          "p95_ms": 22.223
         }
       },
-      "end_to_end_ms": 19848
+      "end_to_end_ms": 20354
     },
     {
       "id": "alternate-layout",
@@ -1077,37 +1077,37 @@
       "passed": true,
       "failures": [],
       "agent_mode": "live_local_model",
-      "document_ms": 667,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 676,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 2,
-      "sandbox_receipt": "RG-C4F8711EE5EF",
+      "sandbox_receipt": "RG-6E71EAB926FA",
       "idempotent_verified": true,
       "stage_latency": {
         "gateway": {
           "count": 8,
-          "p50_ms": 2.967,
-          "p95_ms": 5.235
+          "p50_ms": 3.068,
+          "p95_ms": 5.69
         },
         "document": {
           "count": 1,
-          "p50_ms": 667,
-          "p95_ms": 667
+          "p50_ms": 676,
+          "p95_ms": 676
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 8.741,
-          "p95_ms": 8.741
+          "p50_ms": 8.401,
+          "p95_ms": 8.401
         },
         "semantic": {
           "count": 1,
-          "p50_ms": 8826,
-          "p95_ms": 8826
+          "p50_ms": 8879,
+          "p95_ms": 8879
         },
         "proposal_model": {
           "count": 1,
-          "p50_ms": 8155,
-          "p95_ms": 8155
+          "p50_ms": 8213,
+          "p95_ms": 8213
         },
         "queue": {
           "count": 2,
@@ -1116,11 +1116,11 @@
         },
         "executor": {
           "count": 2,
-          "p50_ms": 20.991,
-          "p95_ms": 20.991
+          "p50_ms": 20.746,
+          "p95_ms": 20.746
         }
       },
-      "end_to_end_ms": 19595
+      "end_to_end_ms": 19041
     },
     {
       "id": "hidden-prose",
@@ -1142,25 +1142,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 761,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 768,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 5.101,
-          "p95_ms": 5.101
+          "p50_ms": 3.169,
+          "p95_ms": 3.169
         },
         "document": {
           "count": 1,
-          "p50_ms": 761,
-          "p95_ms": 761
+          "p50_ms": 768,
+          "p95_ms": 768
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 9.4,
-          "p95_ms": 9.4
+          "p50_ms": 4.888,
+          "p95_ms": 4.888
         },
         "semantic": {
           "count": 0,
@@ -1183,7 +1183,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 2227
+      "end_to_end_ms": 2504
     },
     {
       "id": "unreadable",
@@ -1240,25 +1240,25 @@
         }
       ],
       "agent_mode": "held_before_model",
-      "document_ms": 401,
-      "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
-      "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+      "document_ms": 402,
+      "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+      "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
       "provider_calls": 0,
       "stage_latency": {
         "gateway": {
           "count": 1,
-          "p50_ms": 2.775,
-          "p95_ms": 2.775
+          "p50_ms": 5.215,
+          "p95_ms": 5.215
         },
         "document": {
           "count": 1,
-          "p50_ms": 401,
-          "p95_ms": 401
+          "p50_ms": 402,
+          "p95_ms": 402
         },
         "evidence": {
           "count": 1,
-          "p50_ms": 4.271,
-          "p95_ms": 4.271
+          "p50_ms": 7.56,
+          "p95_ms": 7.56
         },
         "semantic": {
           "count": 0,
@@ -1281,7 +1281,7 @@
           "p95_ms": null
         }
       },
-      "end_to_end_ms": 1647
+      "end_to_end_ms": 1783
     }
   ]
 }

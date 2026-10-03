@@ -184,7 +184,7 @@ try {
         .getByText("Release recorded.", { exact: true })
         .waitFor({ timeout: 15000 });
       await screenshot("release.png");
-      await screenshot("release-detail.png", page.locator(".release-panel"));
+      await screenshot("release-detail.png", page.getByTestId("release-receipt"));
       const receipts = await get("/receipts");
       assert.equal(receipts.length, 1);
       assert.equal(receipts[0].bank_connected, false);

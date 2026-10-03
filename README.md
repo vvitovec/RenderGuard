@@ -137,3 +137,7 @@ docs/           Research, threat boundaries, rubric mapping, demo and operating 
 Final recorded counts and environment interpretation: [verification](docs/verification.md). Prepared packages are for team review only; nothing is submitted automatically.
 
 Review-driven fixes and exact boundaries: [critique/revision record](docs/revision-review.md). Dependency/model attribution and original notices: [third-party inventory](docs/third-party-licenses.md). The current 7B model uses Apache-2.0; historical 3B evaluation notices remain preserved. Model weights are not bundled.
+
+## Revised review packages
+
+[Today’s revised draft PDF](submission/revised-draft-2026-10-03/RenderGuard-Blue-Bands-Collectors.pdf) · [draft ZIP](submission/revised-draft-2026-10-03.zip) · [revised final PDF](submission/revised-final-2026-10-03/RenderGuard-Blue-Bands-Collectors.pdf) · [final ZIP](submission/revised-final-2026-10-03.zip). Both contain ten English slides, entry text, metadata, scoped verification, notices and frozen source. The original draft/final snapshots remain preserved. Submission is gated by Viktor’s review approval.

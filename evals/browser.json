@@ -1,37 +1,55 @@
 {
   "base_url": "https://renderguard.vvitovec.com",
-  "recorded_at": "2026-10-03T14:04:01.410Z",
-  "passed": 8,
-  "total": 8,
+  "recorded_at": "2026-10-03T16:51:22.476Z",
+  "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
+  "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+  "passed": 12,
+  "total": 12,
   "scope": "Actual own-app headless Chrome, local model and isolated PDF worker; no mocked network",
   "runtime_errors": [],
   "steps": [
     {
-      "name": "English landing and isolated workspace",
+      "name": "English landing and isolated workspace with source provenance",
       "passed": true
     },
     {
-      "name": "Actual clean PDF, local model, reviewer approval and sandbox release",
+      "name": "Actual clean PDF and account-handle model input",
       "passed": true
     },
     {
-      "name": "Immutable receipt and redacted audit/CSV downloads",
+      "name": "Authenticated human approval and sandbox release",
       "passed": true
     },
     {
-      "name": "QR recipient discrepancy blocks preparation and exposes exact fields",
+      "name": "Immutable receipt and redacted audit / CSV downloads",
       "passed": true
     },
     {
-      "name": "Policy privacy action changes observed gateway behavior",
+      "name": "QR account conflict settles as blocked with zero provider dispatch",
       "passed": true
     },
     {
-      "name": "Live signature catalog can be removed in isolated workspace",
+      "name": "Management reports unique invoice outcomes, final controls and separate latency stages",
       "passed": true
     },
     {
-      "name": "Mobile workflow stays within viewport and remains usable",
+      "name": "Live policy privacy action changes the observed final decision",
+      "passed": true
+    },
+    {
+      "name": "A real semantic block appears in final audit and metrics",
+      "passed": true
+    },
+    {
+      "name": "Literal feed canary changes allow to block to allow and restores the original feed",
+      "passed": true
+    },
+    {
+      "name": "Recorded full workflow report matches every current fixture and deployed source",
+      "passed": true
+    },
+    {
+      "name": "Mobile workbench remains within the viewport",
       "passed": true
     },
     {
