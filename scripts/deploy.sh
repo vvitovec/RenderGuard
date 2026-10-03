@@ -8,13 +8,15 @@ fi
 renderguard_sha=$(git rev-parse HEAD)
 git archive HEAD | ssh baller 'tar -xf - -C /srv/projects/renderguard'
 ssh baller "cd /srv/projects/renderguard && RELEASE_SHA=$renderguard_sha docker compose -f compose.production.yaml up --build -d"
-python3 - "$renderguard_sha" <<'PY'
-import json, sys, time, urllib.request
+uv run python - "$renderguard_sha" <<'PY'
+import sys, time
+import httpx
 expected=sys.argv[1]
 for attempt in range(30):
     try:
-        with urllib.request.urlopen('https://renderguard.vvitovec.com/api/health',timeout=5) as response:
-            result=json.load(response)
+        response=httpx.get('https://renderguard.vvitovec.com/api/health',timeout=5)
+        response.raise_for_status()
+        result=response.json()
         if result.get('release_sha')==expected and result.get('bank_connected') is False:
             print('Verified deployed SHA',expected)
             break

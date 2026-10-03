@@ -1,0 +1,38 @@
+{
+  "base_url": "https://renderguard.vvitovec.com",
+  "recorded_at": "2026-10-03T13:27:42.406Z",
+  "passed": 7,
+  "total": 7,
+  "scope": "Actual own-app headless Chrome, local model and isolated PDF worker; no mocked network",
+  "runtime_errors": [],
+  "steps": [
+    {
+      "name": "English landing and isolated workspace",
+      "passed": true
+    },
+    {
+      "name": "Actual clean PDF, local model, reviewer approval and sandbox release",
+      "passed": true
+    },
+    {
+      "name": "Immutable receipt and redacted audit/CSV downloads",
+      "passed": true
+    },
+    {
+      "name": "QR recipient discrepancy blocks preparation and exposes exact fields",
+      "passed": true
+    },
+    {
+      "name": "Policy privacy action changes observed gateway behavior",
+      "passed": true
+    },
+    {
+      "name": "Live signature catalog can be removed in isolated workspace",
+      "passed": true
+    },
+    {
+      "name": "Mobile workflow stays within viewport and remains usable",
+      "passed": true
+    }
+  ]
+}

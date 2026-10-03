@@ -1,7 +1,7 @@
 {
   "status": "complete",
-  "generated_at": 1791032962.453079,
-  "source_sha": "395be92fc85f76a46b02dcc2d8e2fb54db6fc6414ba739b45e4bde71ed53e2a1",
+  "generated_at": 1791033963.290784,
+  "source_sha": "b09f9c589d5a69e2215ea5d82c2ddb83a6b6e6f40e83bcf5f06c5c1f45ba7c14",
   "total": 14,
   "passed": 14,
   "provider_note": "Actual PDFium raster, Tesseract OCR and EPC decoding; no model was dispatched",
@@ -17,7 +17,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 386,
+      "document_ms": 431,
       "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
     },
     {
@@ -34,7 +34,7 @@
           "reason": "Machine-readable ibans differs from visible instructions."
         }
       ],
-      "document_ms": 308,
+      "document_ms": 316,
       "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
     },
     {
@@ -58,7 +58,7 @@
           ]
         }
       ],
-      "document_ms": 316,
+      "document_ms": 313,
       "render_hash": "f0cdec6d746e558bce8694a6c53650f81d323159c15ce93bc30ae15ed4dc7208"
     },
     {
@@ -82,7 +82,7 @@
           ]
         }
       ],
-      "document_ms": 370,
+      "document_ms": 324,
       "render_hash": "ccb966e25944c7379e1073c8e33bf55254f9e2ba2671b371c4b56afbe1b3aac7"
     },
     {
@@ -100,7 +100,7 @@
           "supplier_version": 1
         }
       ],
-      "document_ms": 308,
+      "document_ms": 316,
       "render_hash": "e45e3d140b1cc1d2c3dddb991cae1df6212b5d5e284ce03bc2abb1ad28ffd877"
     },
     {
@@ -117,7 +117,7 @@
           "reason": "Machine-readable amounts_minor differs from visible instructions."
         }
       ],
-      "document_ms": 306,
+      "document_ms": 313,
       "render_hash": "24cf79bffcfb15d9e109436fc2d511954e4690c91e42990fce523cc2c24bde9b"
     },
     {
@@ -127,7 +127,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 284,
+      "document_ms": 291,
       "render_hash": "0b64740efd549aa662aae4b9fda455a2c8847b58e8a08cf2e79830ea13044049"
     },
     {
@@ -137,7 +137,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 307,
+      "document_ms": 315,
       "render_hash": "49537252d0510a78995d106724b695bc48b7db8b992261884af1ea5814a1ce2f"
     },
     {
@@ -147,7 +147,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 306,
+      "document_ms": 311,
       "render_hash": "08416049bf2a7732bcc12bff4ae3c5052df2ddad78e6692bbc055edb61024ff0"
     },
     {
@@ -157,7 +157,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 307,
+      "document_ms": 314,
       "render_hash": "4c7702d7a0fe83bd83cf53b13fbc031a95546cafc162d2035047ac5803c63841"
     },
     {
@@ -181,7 +181,7 @@
           "supplier_version": 1
         }
       ],
-      "document_ms": 326,
+      "document_ms": 329,
       "render_hash": "e933475b2c83b0f27d5735502b194b6482e47ddc380d15b02ba31055052b67c4"
     },
     {
@@ -198,7 +198,7 @@
           "reason": "Visible total/currency differs from the independently approved obligation."
         }
       ],
-      "document_ms": 310,
+      "document_ms": 317,
       "render_hash": "b0bfbb63ba493912ff507e5c162a0b7561641eee8266a02154a7ffbc62143e2f"
     },
     {
@@ -208,7 +208,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 320,
+      "document_ms": 323,
       "render_hash": "ada0a9387155ee248e90c917d30d6aedba9e0d1034aa7e02890b7e610844057a"
     },
     {
@@ -218,7 +218,7 @@
       "verdict": "allow",
       "passed": true,
       "failures": [],
-      "document_ms": 336,
+      "document_ms": 324,
       "render_hash": "ada0a9387155ee248e90c917d30d6aedba9e0d1034aa7e02890b7e610844057a"
     }
   ]

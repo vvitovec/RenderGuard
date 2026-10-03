@@ -15,7 +15,7 @@ output/playwright/videos/
 .DS_Store
 .secrets/
 *.tsbuildinfo
-output/
+output/*
 !output/playwright/
 output/playwright/*
 !output/playwright/release.png
