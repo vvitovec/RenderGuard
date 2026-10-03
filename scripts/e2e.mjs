@@ -308,6 +308,8 @@ try {
       assert.ok((await applied).ok(), "Policy update accepted");
       await idle();
       await stable();
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.locator(".policy-provenance").scrollIntoViewIfNeeded();
       const top = await page.locator(".policy-provenance").boundingBox();
       const quick = await page.locator(".policy-quick").boundingBox();
       await page.screenshot({
@@ -422,6 +424,26 @@ try {
         await page.getByText("Not recorded", { exact: true }).count(),
         0,
       );
+      await view("Release register");
+      const finalMetrics = await get("/metrics");
+      assert.ok(finalMetrics.final_interactions.block >= 3);
+      assert.ok(finalMetrics.final_interactions.allow >= 2);
+      assert.ok(finalMetrics.redactions.total >= 2);
+      await screenshot("register.png");
+      const summary = page.locator(".report-columns .report-section").first();
+      await summary.scrollIntoViewIfNeeded();
+      await stable();
+      const summaryBox = await summary.boundingBox();
+      const countersBox = await summary.locator(".usage-list").boundingBox();
+      await page.screenshot({
+        path: `${out}/audit-detail.png`,
+        clip: {
+          x: summaryBox.x,
+          y: summaryBox.y,
+          width: summaryBox.width,
+          height: countersBox.y + countersBox.height - summaryBox.y + 12,
+        },
+      });
     },
   );
   await step("Mobile workbench remains within the viewport", async () => {

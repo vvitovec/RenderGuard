@@ -1,8 +1,8 @@
 {
-  "recorded_at": 1791042799.4871502,
+  "recorded_at": 1791044591.9321747,
   "base_url": "https://renderguard.vvitovec.com",
-  "source_sha": "ebbfa94a8e23415e1849eff158939f00b8e70a2f2bd0d43dc064a84d0f0dd18c",
-  "release_sha": "9d71b7188449a942109572030d607f0c871640a1",
+  "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
+  "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
   "passed": 7,
   "total": 7,
   "scope": "Actual hosted capability API, isolated worker and real local semantic model; synthetic invoice and sandbox effect only",

@@ -1,15 +1,16 @@
 {
-  "recorded_at": 1791042839.240854,
+  "recorded_at": 1791044731.672089,
   "health": {
     "ok": true,
     "version": "1.0.0",
-    "release_sha": "9d71b7188449a942109572030d607f0c871640a1",
+    "release_sha": "8a9d52828466b28e8c9ca0394f3b7fde876575a7",
     "bank_connected": false,
     "worker_mode": "isolated-container"
   },
-  "source_sha": "ebbfa94a8e23415e1849eff158939f00b8e70a2f2bd0d43dc064a84d0f0dd18c",
+  "source_sha": "e8ecb4682fcb128281267585790f1f56962327f6738f51b7500a500642d50a73",
   "session_survived_container_recreation": true,
   "supplier_records_survived": true,
   "private_model_available": true,
-  "scope": "Actual public HTTPS, current application digest and pre-existing signed session retained across revised gateway/PDF-worker recreation; sandbox only"
+  "model": "qwen2.5:7b",
+  "scope": "Actual public HTTPS, current application digest and pre-existing signed session retained across gateway/PDF-worker recreation. Private7B model available; actual inference separately verified in full live reports. Sandbox only."
 }

@@ -467,7 +467,9 @@ class Payments:
             texts[label] = text
             redactions.extend(kinds)
         self.store.event(workspace, "evidence.minimized", "allow", "privacy",
-                         {"document_id": doc["id"], "redaction_counts": dict(Counter(redactions))})
+                         {"document_id": doc["id"], "redaction_counts": [
+                             {"kind": label, "count": count} for label, count in Counter(redactions).items()
+                         ]})
         return texts
 
     def document_text_gate(self, principal, doc) -> dict:

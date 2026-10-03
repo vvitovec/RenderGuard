@@ -212,9 +212,15 @@ function ManagementReport({
             <dd>{interactions?.block ?? "—"}</dd>
             <dt>Held for review</dt>
             <dd>{interactions?.review ?? "—"}</dd>
-            <dt>Actual redactions</dt>
+            <dt>{metrics.redactions?.complete === false ? "Known redactions" : "Actual redactions"}</dt>
             <dd>{metrics.redactions?.total ?? "—"}</dd>
           </dl>
+          {metrics.redactions?.complete === false && (
+            <p className="small">
+              {metrics.redactions.unknown_entries} historical counter entries were unavailable.
+              The total includes validated counts only.
+            </p>
+          )}
           <h3>Recorded control holds</h3>
           <p className="small">
             Counts describe held checks; they are not unique threats.

@@ -29,7 +29,7 @@ def build(target: Path, stage='draft'):
     team = json.loads((ROOT / 'submission/team.json').read_text())
     evidence, live = load('results.json'), load('live-pipeline.json')
     semantic, browser = load('live-semantic.json'), load('browser.json')
-    performance = load('performance.json')
+    performance = load('linux-performance.json') or load('performance.json')
     sdk = load('live-sdk.json')
     if stage == 'final':
         from renderguard.provenance import source_hash
@@ -207,12 +207,13 @@ def build(target: Path, stage='draft'):
     c.showPage()
 
     frame(8, 'Reporting / performance', 'Report the final decision and the remaining budget.')
-    shot('audit-detail.png', 60, 273, 1160, 185)
+    shot('audit-detail.png', 60, 190, 635, 280)
     p95 = performance.get('gateway', {}).get('p95_ms')
     gateway_text = f'{p95:,.2f} ms' if isinstance(p95, (int, float)) else 'Not measured'
-    text(60, 233, 'DETERMINISTIC GATEWAY p95', 11, 'Helvetica-Bold', GREEN)
-    text(60, 183, gateway_text, 34, 'Times-Roman', GREEN)
-    paragraph(350, 232, f"{performance.get('requests', 0)} sequential measured requests, including policy lookup and audit persistence. No model, OCR or network; not a throughput benchmark.", 855, 17, 25)
+    text(750, 439, 'DETERMINISTIC GATEWAY p95', 11, 'Helvetica-Bold', GREEN)
+    text(750, 377, gateway_text, 48, 'Times-Roman', GREEN)
+    paragraph(750, 335, f"{performance.get('requests', 0)} sequential checks on {performance.get('host', 'recorded host')}, including policy lookup and audit persistence.", 465, 18, 27)
+    paragraph(750, 247, 'No model, OCR or network; not a throughput benchmark. Live budgets and separate stage timings are available in the register.', 465, 16, 25)
     workflow = live.get('p95_end_to_end_ms')
     workflow_text = f'{workflow:,.0f} ms' if isinstance(workflow, (int, float)) else 'not measured'
     paragraph(60, 130, f'Full workflow p95: {workflow_text}. The UI reports OCR, semantic inference, proposal inference, queue and executor separately. Redacted JSONL and sandbox CSV are exportable.', 1140, 17, 25)

@@ -36,7 +36,7 @@ from .gateway import Denied, Gateway, OllamaProvider, Principal, compact_checks
 from .masterdata import seed_workspace
 from .payments import Payments, unpack
 from .policy import Policy, PolicyCatalog
-from .privacy import safe_log
+from .privacy import REDACTION_PATTERNS, safe_log
 from .provenance import source_hash
 from .store import Store, canonical, now, uid
 
@@ -762,8 +762,25 @@ def create_app(
             "executor": stats([row["data"].get("latency_ms") for row in rows if row["kind"] == "executor.stage"]),
         }
         redactions = Counter()
+        unknown_redaction_entries = 0
         for row in rows:
-            redactions.update(row["data"].get("redaction_counts", {}))
+            counts = row["data"].get("redaction_counts", {})
+            if isinstance(counts, dict):
+                entries = [{"kind": pattern, "count": count} for pattern, count in counts.items()]
+            elif isinstance(counts, list):
+                entries = counts
+            else:
+                unknown_redaction_entries += 1
+                continue
+            for entry in entries:
+                if not isinstance(entry, dict) or set(entry) != {"kind", "count"}:
+                    unknown_redaction_entries += 1
+                    continue
+                pattern, count = entry["kind"], entry["count"]
+                if isinstance(pattern, str) and pattern in REDACTION_PATTERNS and isinstance(count, int) and not isinstance(count, bool) and count >= 0:
+                    redactions[pattern] += count
+                else:
+                    unknown_redaction_entries += 1
         current, _ = catalog.get(p.workspace)
         usage = summary(p)["usage"]
         budget_values = (
@@ -787,7 +804,9 @@ def create_app(
             "final_interactions": final_interactions,
             "payments": payment_totals,
             "stage_latency": stage_latency,
-            "redactions": {"total": sum(redactions.values()), "patterns": dict(redactions)},
+            "redactions": {"total": sum(redactions.values()), "patterns": dict(redactions),
+                           "unknown_entries": unknown_redaction_entries,
+                           "complete": unknown_redaction_entries == 0},
             "budgets": budgets,
             "decisions_scope": "Low-level audit events; final_interactions counts playground verdicts once.",
             "payments_scope": "Latest proposal per document; released amounts are synthetic ledger effects, not fraud savings.",

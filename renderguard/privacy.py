@@ -6,6 +6,7 @@ from .documents import find_ibans
 SECRET = re.compile(r"\b(?:sk-[A-Za-z0-9_-]{12,}|AKIA[A-Z0-9]{16}|ghp_[A-Za-z0-9]{20,})\b")
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
 ACCOUNT = re.compile(r"\b(?:DE\d{20}|NL\d{2}[A-Z]{4}\d{10}|CZ\d{22}|AT\d{18}|PL\d{26})\b")
+REDACTION_PATTERNS = frozenset({"secret", "api_key", "email", "bank_account", "account_handle"})
 
 
 def redact_text(value: str, accounts: dict[str, str] | None = None) -> tuple[str, list[str]]:

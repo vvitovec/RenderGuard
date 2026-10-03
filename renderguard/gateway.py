@@ -340,9 +340,11 @@ class Gateway:
                 "checks": checks,
                 "latency_ms": result["latency_ms"],
                 "payload_preview": safe_log(output),
-                "redaction_counts": dict(Counter(
-                    label for item in checks for label in item.get("redactions", [])
-                )),
+                "redaction_counts": [
+                    {"kind": label, "count": count} for label, count in Counter(
+                        label for item in checks for label in item.get("redactions", [])
+                    ).items()
+                ],
             },
         )
         return result

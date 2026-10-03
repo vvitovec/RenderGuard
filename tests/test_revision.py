@@ -481,3 +481,58 @@ def test_agent_sdk_holds_unready_evidence_before_handle_resolution(env, status):
     assert response.json()["verdict"] == "review" and env[2].calls == 0
     assert not env[0].state.store.all("SELECT * FROM proposals")
     assert not env[0].state.store.all("SELECT * FROM receipts")
+
+
+def test_api_privacy_redaction_and_block_keep_numeric_metrics_without_dispatch(env):
+    client = env[1]
+    text = "sk-syntheticcredential123456 a@example.test b@example.test DE59999999990000001001"
+    payload = {"kind": "model.request", "payload": {"model": selected_model(env), "text": text}}
+    redacted = client.post("/api/playground", json=payload)
+    assert redacted.status_code == 200 and redacted.json()["verdict"] == "allow"
+    assert "syntheticcredential" not in redacted.text and "a@example" not in redacted.text
+    client.post("/api/session/persona", json={"role": "admin"})
+    policy = client.get("/api/policy").json()["policy"]
+    policy["controls"]["pii_action"] = "block"
+    assert client.put("/api/policy", json=policy).status_code == 200
+    blocked = client.post("/api/playground", json={**payload, "semantic": True})
+    assert blocked.status_code == 200 and blocked.json()["verdict"] == "block"
+    metrics = client.get("/api/metrics")
+    assert metrics.status_code == 200
+    assert metrics.json()["redactions"] == {
+        "total": 8, "patterns": {"secret": 2, "email": 4, "bank_account": 2},
+        "unknown_entries": 0, "complete": True,
+    }
+    assert metrics.json()["final_interactions"] == {"allow": 1, "block": 1, "review": 0, "total": 2}
+    assert env[2].calls == 0 and not env[0].state.store.all("SELECT * FROM proposals")
+    assert not env[0].state.store.all("SELECT * FROM receipts")
+
+
+def test_safe_log_count_records_preserve_metadata_without_secret_field_exception():
+    from renderguard.privacy import safe_log
+
+    value = safe_log({"secret": "private-value", "api_key": "private-key", "redaction_counts": [
+        {"kind": "secret", "count": 2}, {"kind": "api_key", "count": 1}, {"kind": "email", "count": 3},
+    ]})
+    assert value["secret"] == value["api_key"] == "[REDACTED]"
+    assert value["redaction_counts"] == [
+        {"kind": "secret", "count": 2}, {"kind": "api_key", "count": 1}, {"kind": "email", "count": 3},
+    ]
+    malformed = safe_log({"redaction_counts": {"secret": "private-value", "api_key": "private-key"}})
+    assert malformed["redaction_counts"] == {"secret": "[REDACTED]", "api_key": "[REDACTED]"}
+    disguised = safe_log({"payload_preview": {"redaction_counts": {"secret": 1234, "api_key": 5678}}})
+    assert disguised["payload_preview"]["redaction_counts"] == {"secret": "[REDACTED]", "api_key": "[REDACTED]"}
+
+
+def test_metrics_disclose_unknown_legacy_counts_without_crashing(env):
+    store = env[0].state.store
+    for counts in ({"secret": "[REDACTED]", "api_key": "[REDACTED]", "email": 2,
+                    "bank_account": -1, "account_handle": False}, ["legacy-malformed"]):
+        store.execute("INSERT INTO events VALUES(?,?,?,?,?,?,?)", (
+            uid(), env[3]["workspace"], now(), "legacy-redactions", "block", "privacy",
+            canonical({"redaction_counts": counts}),
+        ))
+    response = env[1].get("/api/metrics")
+    assert response.status_code == 200
+    assert response.json()["redactions"] == {
+        "total": 2, "patterns": {"email": 2}, "unknown_entries": 5, "complete": False,
+    }

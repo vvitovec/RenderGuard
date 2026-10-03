@@ -20,6 +20,7 @@ Sol reproduced issues using synthetic temporary state and deterministic provider
 | Reports lack freshness attribution | Actual current core hash compared to recorded hash; complete fixture coverage checked; stale reports visibly labelled |
 | Policy overrides mask baseline changes; balanced has no semantics | Overrides represented as delta; baseline provenance visible; balanced review band and disabled-control disclosure |
 | SDK proposal requested before PDF evidence is ready | Queued/failed evidence returns a controlled review hold, with zero model calls, proposal rows or receipts |
+| Secret-pattern counters mask themselves and break metrics | Trusted counters use kind/count records; secret fields remain masked, legacy unknowns are disclosed and never crash reporting |
 | Dependency/model attribution missing | Locked/installed metadata and original notices packaged; Qwen research license recorded without redistributing weights |
 
 ## Hosted validation correction
