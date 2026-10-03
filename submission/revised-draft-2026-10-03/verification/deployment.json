@@ -1,0 +1,17 @@
+{
+  "recorded_at": 1791045658.201395,
+  "health": {
+    "ok": true,
+    "version": "1.0.0",
+    "release_sha": "f5b402a2f8d420ff259e1cf044fe6aa80959fe95",
+    "bank_connected": false,
+    "worker_mode": "isolated-container"
+  },
+  "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
+  "session_survived_container_recreation": true,
+  "supplier_records_survived": true,
+  "private_model_available": true,
+  "model": "qwen2.5:7b",
+  "self_hosted_model_notices_available": true,
+  "scope": "Actual public HTTPS, current application digest, private7B availability and self-hosted notices. Retained signed-session checks use an optional private checkpoint; actual inference is separately verified in live reports. Sandbox only."
+}
