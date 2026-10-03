@@ -26,6 +26,7 @@ try{
  await step('Immutable receipt and redacted audit/CSV downloads',async()=>{
   await page.getByRole('button',{name:'Release register',exact:true}).click();await page.locator('.register table').first().waitFor();assert.equal(await page.locator('.register table').first().locator('tbody tr').count(),1);
   const downloadPromise=page.waitForEvent('download');await page.getByRole('link',{name:'Export redacted JSONL'}).click();const download=await downloadPromise;assert.equal(download.suggestedFilename(),'renderguard-audit.jsonl');await download.saveAs(out+'/audit.jsonl');
+  const csvPromise=page.waitForEvent('download');await page.getByRole('link',{name:'Export release CSV'}).click();const csv=await csvPromise;assert.equal(csv.suggestedFilename(),'sandbox-release-register.csv');await csv.saveAs(out+'/receipts.csv');
   await page.screenshot({path:out+'/register.png',fullPage:true});
  });
  await step('QR recipient discrepancy blocks preparation and exposes exact fields',async()=>{

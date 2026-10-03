@@ -35,6 +35,11 @@ def main():
         "docs/judge-walkthrough.md",
         "docs/criteria-matrix.md",
         "docs/limitations.md",
+        "docs/verification.md",
+        "docs/architecture.md",
+        "docs/operations.md",
+        "docs/workflow-research.md",
+        "docs/threat-model.md",
     ):
         shutil.copy(ROOT / name, target / Path(name).name)
     shutil.copytree(ROOT / "evals", target / "verification")
@@ -52,6 +57,13 @@ def main():
                 continue
             content = subprocess.check_output(["git", "show", sha + ":" + path], cwd=ROOT)
             z.writestr("RenderGuard/" + path, content)
+    (target / "START-HERE.md").write_text(
+        "# RenderGuard — "
+        + args.stage
+        + " review package\n\nPrepared for Viktor to review. **Nothing has been submitted.**\n\nPresentation: `RenderGuard-Blue-Bands-Collectors.pdf` (10 English slides). `description.md` contains entry text; `team.json` contains exact team/member metadata. `source.zip` is the frozen committed implementation. `verification` contains scoped actual test reports.\n\nDemo: https://renderguard.vvitovec.com\nRepository: https://github.com/vvitovec/RenderGuard\nSource commit: "
+        + sha
+        + "\n\nRead the judge walkthrough before presenting. All payment effects are sandbox-only.\n"
+    )
     manifest = {
         "project": "RenderGuard",
         "stage": args.stage,
@@ -68,13 +80,6 @@ def main():
         },
     }
     (target / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    (target / "START-HERE.md").write_text(
-        "# RenderGuard — "
-        + args.stage
-        + " review package\n\nPrepared for Viktor to review. **Nothing has been submitted.**\n\nPresentation: `RenderGuard-Blue-Bands-Collectors.pdf` (10 English slides). `description.md` contains entry text; `team.json` contains exact team/member metadata. `source.zip` is the frozen committed implementation. `verification` contains scoped actual test reports.\n\nDemo: https://renderguard.vvitovec.com\nRepository: https://github.com/vvitovec/RenderGuard\nSource commit: "
-        + sha
-        + "\n\nRead the judge walkthrough before presenting. All payment effects are sandbox-only.\n"
-    )
     archive = target.with_suffix(".zip")
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
         for p in sorted(target.rglob("*")):

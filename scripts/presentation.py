@@ -88,8 +88,13 @@ def build(target: Path, stage="draft"):
             return False
         image = ImageReader(str(p))
         iw, ih = image.getSize()
-        scale = min(width / iw, height / ih)
-        c.drawImage(image, x, y + (height - ih * scale), width=iw * scale, height=ih * scale, mask="auto")
+        scale = width / iw
+        c.saveState()
+        clip = c.beginPath()
+        clip.rect(x, y, width, height)
+        c.clipPath(clip, stroke=0)
+        c.drawImage(image, x, y + height - ih * scale, width=width, height=ih * scale, mask="auto")
+        c.restoreState()
         return True
 
     frame(1, "Blue Bands Collectors", "The invoice looks right. Does the payment?")

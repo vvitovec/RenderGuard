@@ -25,7 +25,15 @@ jobs = {
     "com.renderguard.model-forward": {
         "ProgramArguments": [
             "/usr/bin/ssh",
-            "-N",
+            "-NT",
+            "-o",
+            "ControlMaster=no",
+            "-o",
+            "ControlPath=none",
+            "-o",
+            "ControlPersist=no",
+            "-o",
+            "ConnectTimeout=10",
             "-o",
             "BatchMode=yes",
             "-o",

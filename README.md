@@ -70,6 +70,7 @@ uv run python -m scripts.evaluate
 # Actual hosted model, isolated worker, approval and single sandbox effect:
 uv run python -m scripts.evaluate --url https://renderguard.vvitovec.com
 uv run python -m scripts.live_model_check --url https://renderguard.vvitovec.com
+uv run python -m scripts.live_sdk_check --url https://renderguard.vvitovec.com
 # Isolated headless browser against our own app:
 BASE_URL=https://renderguard.vvitovec.com npm run test:e2e
 ```
@@ -131,3 +132,5 @@ scripts/        Fixture generator, evaluators, headless E2E and package tooling
 submission/     Team metadata, frozen first draft and final review packages
 docs/           Research, threat boundaries, rubric mapping, demo and operating guide
 ```
+
+Final recorded counts and environment interpretation: [verification](docs/verification.md). Prepared packages are for team review only; nothing is submitted automatically.

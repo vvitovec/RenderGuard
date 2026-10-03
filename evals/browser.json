@@ -1,8 +1,8 @@
 {
   "base_url": "https://renderguard.vvitovec.com",
-  "recorded_at": "2026-10-03T13:27:42.406Z",
-  "passed": 7,
-  "total": 7,
+  "recorded_at": "2026-10-03T14:04:01.410Z",
+  "passed": 8,
+  "total": 8,
   "scope": "Actual own-app headless Chrome, local model and isolated PDF worker; no mocked network",
   "runtime_errors": [],
   "steps": [
@@ -32,6 +32,10 @@
     },
     {
       "name": "Mobile workflow stays within viewport and remains usable",
+      "passed": true
+    },
+    {
+      "name": "Self-hosted API reference loads under the content security policy",
       "passed": true
     }
   ]

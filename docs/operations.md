@@ -21,7 +21,7 @@ The MacBook is the interactive development machine. The app and ledger live on *
 - Project model runtime: `/Users/viktorvitovec/Projects/renderguard-runtime`.
 - Model files: `models`, `qwen2.5:3b` Q4_K_M (~1.9 GB), copied from the verified existing local model cache.
 - Model service: `com.renderguard.ollama` LaunchAgent. `OLLAMA_HOST=127.0.0.1:11444`, one loaded model, one parallel request, private project model folder. Ollama installed through Homebrew.
-- Private reverse forward: `com.renderguard.model-forward` LaunchAgent, `ssh -N -R 127.0.0.1:11444:127.0.0.1:11444 baller`, keepalive / automatic restart. Uses the existing authenticated host connection; no public model port.
+- Private reverse forward: `com.renderguard.model-forward` LaunchAgent, `ssh -N -R 127.0.0.1:11444:127.0.0.1:11444 baller`, keepalive / automatic restart. The forward uses `ControlMaster=no`, `ControlPath=none`, `ControlPersist=no` so LaunchAgent supervises its dedicated SSH process. Uses the existing authenticated host connection; no public model port.
 - Both definitions: `~/Library/LaunchAgents/com.renderguard.*.plist`. Logs: project runtime `com.renderguard.*.log` / `.err.log`.
 - Recreate project-owned jobs only: `/opt/homebrew/bin/python3 /Users/viktorvitovec/Projects/renderguard-runtime/install-model-host.py` (source: `scripts/install-model-host.py`).
 - Verify: `curl http://127.0.0.1:11444/api/tags` on Mac mini and Baller. Restart only `launchctl kickstart -k gui/$(id -u)/com.renderguard.ollama` or the project forward when needed.
