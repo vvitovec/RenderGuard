@@ -36,3 +36,17 @@ Supplier-account validation is prior art. The useful differentiator is a single 
 Payments are the specialized adapter. The reusable gateway intercepts model requests/responses, registered tools and resource discovery under one validated policy/feed, with capability-derived identity, privacy, reservations and reporting. The guarded effect is independent of model confidence. Use the architecture diagram to show which process holds each authority.
 
 Show deterministic gateway p95 separately from OCR, queue and inference latency. These are actual scoped measurements, not claimed production throughput. Read the release register as unique current invoice outcomes; raw stage events have a separate count. Budget remaining is visible, and a new synthetic workspace starts with fresh capped resources.
+
+
+## Revised ten-slide PDF: a three-minute explanation
+
+1. **0:00–0:12 — Purpose.** AI prepares a repeat-supplier payment; a human approves; RenderGuard enforces the exact action.
+2. **0:12–0:32 — Failure.** The page and PDF text say account ...1001, but the QR says ...9999. The saved supplier remains the independent authority.
+3. **0:32–0:52 — Completion.** The actual proposal model receives account_1. Human approval produces one saved sandbox receipt.
+4. **0:52–1:10 — Prevention.** The QR conflict blocks before dispatch: zero AI calls.
+5. **1:10–1:30 — Architecture.** Show the isolated document worker, reusable gateway, real local AI, reviewer and protected executor. Each holds only its required authority.
+6. **1:30–1:50 — Hybrid controls.** Explain the recorded allow/block/allow rule roundtrip and the real semantic guard's benign-versus-attack results. Judges can change policy, thresholds and budgets.
+7. **1:50–2:08 — Exact execution.** Changed evidence, payment, supplier or policy invalidates approval. Concurrent retries return one receipt.
+8. **2:08–2:28 — Reporting.** Show current invoice states and remaining resources. Separate 6.31 ms deterministic gateway p95 from the 27.2 s full hosted workflow p95.
+9. **2:28–2:47 — Evidence.** Nine legitimate invoices allowed; eleven blocked and one held. These are finite synthetic tests, with exact reports, prompts and source hashes.
+10. **2:47–3:00 — Inspect it.** Invite judges to run Clean, QR conflict and a configuration change at the linked demo. All payments are synthetic.

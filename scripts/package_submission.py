@@ -81,7 +81,7 @@ def main():
     (target / "START-HERE.md").write_text(
         "# RenderGuard — "
         + args.stage
-        + " review package\n\nPrepared for Viktor to review. **Nothing has been submitted.**\n\nPresentation: `RenderGuard-Blue-Bands-Collectors.pdf` (10 English slides). `description.md` contains entry text; `team.json` contains exact team/member metadata. `source.zip` is the frozen committed implementation. `verification` contains scoped actual test reports.\n\nDemo: https://renderguard.vvitovec.com\nRepository: https://github.com/vvitovec/RenderGuard\nSource commit: "
+        + " review package\n\nPrepared for Viktor to review and upload. This revision does not modify the existing HackTribe entry.\n\nPresentation: `RenderGuard-Blue-Bands-Collectors.pdf` (10 English slides). `description.md` contains entry text; `team.json` contains exact team/member metadata. `source.zip` is the frozen committed implementation. `verification` contains scoped actual test reports.\n\nDemo: https://renderguard.vvitovec.com\nRepository: https://github.com/vvitovec/RenderGuard\nSource commit: "
         + sha
         + "\n\nRead the judge walkthrough before presenting. All payment effects are sandbox-only.\n"
     )
@@ -92,7 +92,7 @@ def main():
         "created_at": datetime.now().astimezone().isoformat(),
         "source_commit": sha,
         "slides": 10,
-        "submission_status": "Prepared for Viktor review; not submitted",
+        "submission_status": "Prepared revision for review; this snapshot has not been uploaded by the packager",
         "demo_url": "https://renderguard.vvitovec.com",
         "repository_url": "https://github.com/vvitovec/RenderGuard",
         "files": {

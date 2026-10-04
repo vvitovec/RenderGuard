@@ -18,4 +18,4 @@ The English workbench includes direct evidence comparison, policy and literal si
 
 All suppliers and accounts are synthetic. The executor writes sandbox ledger receipts only; no bank is connected and no money moves. Demo persona switching is explicitly labelled and scoped to each fictional workspace. Production requires external identity and independently managed ERP authority.
 
-**Status:** Prepared for team review. Not submitted to HackYeah.
+**Status:** Final revision prepared for team review and upload.

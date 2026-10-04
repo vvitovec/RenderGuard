@@ -141,3 +141,8 @@ Review-driven fixes and exact boundaries: [critique/revision record](docs/revisi
 ## Revised review packages
 
 [Today’s revised draft PDF](submission/revised-draft-2026-10-03/RenderGuard-Blue-Bands-Collectors.pdf) · [draft ZIP](submission/revised-draft-2026-10-03.zip) · [revised final PDF](submission/revised-final-2026-10-03/RenderGuard-Blue-Bands-Collectors.pdf) · [final ZIP](submission/revised-final-2026-10-03.zip). Both contain ten English slides, entry text, metadata, scoped verification, notices and frozen source. The original draft/final snapshots remain preserved. Submission is gated by Viktor’s review approval.
+
+
+### Final PDF revision — 4 October
+
+[Review/upload PDF](submission/revised-final-2026-10-04/RenderGuard-Blue-Bands-Collectors.pdf) · [Complete review package](submission/revised-final-2026-10-04.zip). Ten English slides: concrete problem, completed clean workflow, blocked QR conflict, architecture, configurable hybrid controls, exact approval, reporting/performance, scoped test results and judge actions. Previous snapshots are preserved. This revision is prepared for Viktor to review and upload to the existing entry.
