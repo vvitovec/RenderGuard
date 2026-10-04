@@ -1,0 +1,27 @@
+{
+  "recorded_at": 1791045642.1266887,
+  "source_sha": "1771310bec34bd85c26a12b1d34fe173f3112bda9e8e28bbdb3d6134891a7f7a",
+  "host": "Linux x86_64",
+  "requests": 300,
+  "passed": 300,
+  "provider_calls": 0,
+  "scope": "Sequential synthetic deterministic gateway checks, including policy/catalog reads, privacy/permissions and SQLite audit persistence. No model, OCR, payment execution or network request. Not a throughput/load benchmark.",
+  "gateway": {
+    "count": 300,
+    "p50_ms": 4.559,
+    "p95_ms": 6.308,
+    "max_ms": 8.101
+  },
+  "allowed": {
+    "count": 150,
+    "p50_ms": 4.662,
+    "p95_ms": 6.317,
+    "max_ms": 8.101
+  },
+  "blocked": {
+    "count": 150,
+    "p50_ms": 4.433,
+    "p95_ms": 6.261,
+    "max_ms": 6.554
+  }
+}
